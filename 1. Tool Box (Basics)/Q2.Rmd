@@ -1,0 +1,112 @@
+---
+title: "Quiz 2"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+### 1.
+
+```{r 1}
+question("Which of the following commands will create a directory called data
+         in your current working directory?",
+  answer("mkdir ../data"),
+  answer("mkdir /Users/data"),
+  answer("mkdir data",correct = TRUE),
+  answer("pwd"))
+```
+
+### 2.
+
+```{r 2}
+question("Which of the following will initiate a git repository locally?",
+  answer("git pull"),
+  answer("git remote add"),
+  answer("git boom"),
+  answer("git init",correct = TRUE))
+```
+
+### 3.
+
+```{r 3}
+question("Suppose you have forked a repository called datascientist on Github
+         but it isn't on your local computer yet. Which of the following is
+         the command to bring the directory to your local computer? (For this
+         question assume that your user name is username).",
+  answer("git init"),
+  answer("git pull https://github.com/username/datascientist.git"),
+  answer("git clone https://github.com/username/datascientist.git",correct =
+           TRUE),
+  answer("git pull datascientist master")
+)
+```
+
+### 4. 
+
+```{r 4}
+question("Which of the following will create a markdown document with a
+         secondary heading saying 'Data Science Specialization' and an
+         unordered list with the following for bullet points: Uses R, Nine
+         courses, Goes from raw data to data products?",
+  answer('<pre>
+*** Data Science Specialization
+
+* Uses R
+
+* Nine courses
+
+* Goes from raw data to data products</pre>'),
+  answer('<pre>
+## Data Science Specialization
+
+li Uses R
+
+li Nine courses
+
+li Goes from raw data to data products</pre>'),
+  answer('<pre>
+## Data Science Specialization
+
+* Uses R
+
+* Nine courses
+
+* Goes from raw data to data products</pre>',correct = TRUE),
+  answer('<pre>
+*h2 Data Science Specialization
+
+* Uses R
+
+* Nine courses
+
+* Goes from raw data to data products
+</pre>'),
+  answer('<pre>
+### Data Science Specialization
+
+* Uses R
+
+* Nine courses
+
+* Goes from raw data to data products
+         </pre>'))
+```
+
+### 5.
+
+```{r 5}
+question("Install and load the KernSmooth R package. What does the copyright
+         message say?",
+  answer("Copyright Coursera 2009-2013"),
+  answer("Copyright M. P. Wand 1990-2009"),
+  answer("Copyright Matthew Wand 1997-2009"),
+  answer("Copyright M. P. Wand 1997-2009",correct = TRUE))
+```

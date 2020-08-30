@@ -1,0 +1,153 @@
+---
+title: "Q4"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE,comment = "")
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+### 1.
+
+What is produced at the end of this snippet of R code?
+
+```{r,echo = TRUE,eval = FALSE}
+set.seed(1)
+rpois(5,2)
+```
+
+```{r q1}
+question('',
+  answer('It is impossible to tell because the result is random'),
+  answer('A vector with the numbers 3.3, 2.5, 0.5, 1.1, 1.7'),
+  answer('A vector with the numbers 1, 1, 2, 4, 1',correct = TRUE),
+  answer('A vector with the numbers 1, 4, 1, 1, 5'))
+```
+
+### 2.
+
+```{r q2}
+question("What R function can be used to generate standard Normal random
+         variables?",
+  answer("qnorm"),
+  answer("pnorm"),
+  answer("dnorm"),
+  answer("rnorm",correct = TRUE))
+```
+
+### 3.
+
+```{r q3}
+question("When simulating data, why is using the set.seed() function important?
+         Select all that apply.",
+  answer("It can be used to generate non-uniform random numbers."),
+  answer("It ensures that the random numbers generated are within specified
+         boundaries."),
+  answer("It ensures that the sequence of random numbers is truly random."),
+  answer("It can be used to specify which random number generating algorithm R
+         should use, ensuring consistency and reproducibility.",
+         correct = TRUE))
+```
+
+### 4.
+
+```{r q4}
+question("Which function can be used to evaluate the inverse cumulative
+         distribution function for the Poisson distribution?",
+  answer("ppois"),
+  answer("qpois",correct = TRUE),
+  answer("dpois"),
+  answer("rpois"))
+```
+
+### 5.
+
+What does the following code do?
+
+```{r,echo = TRUE,eval = FALSE}
+set.seed(10)
+x <- rep(0:1, each = 5)
+e <- rnorm(10, 0, 20)
+y <- 0.5 + 2 * x + e
+```
+
+```{r q5}
+question('',
+  answer("Generate uniformly distributed random data"),
+  answer("Generate data from a Normal linear model",correct = TRUE),
+  answer("Generate data from a Poisson generalized linear model"),
+  answer("Generate random exponentially distributed data"))
+```
+
+### 6.
+
+```{r q6}
+question('What R function can be used to generate Binomial random variables?',
+  answer("dbinom"),
+  answer("rbinom",correct = TRUE),
+  answer("pbinom"),
+  answer("qbinom"))
+```
+
+### 7.
+
+```{r q7}
+question("What aspect of the R runtime does the profiler keep track of when an
+         R expression is evaluated?",
+  answer("the function call stack",correct = TRUE),
+  answer("the working directory"),
+  answer("the global environment"),
+  answer("the package search list"))
+```
+
+### 8.
+
+Consider the following R code
+
+```{r,echo = TRUE,eval = FALSE}
+library(datasets)
+Rprof()
+fit <- lm(y ~ x1 + x2)
+Rprof(NULL)
+```
+
+(Assume that y, x1, and x2 are present in the workspace.) Without running the
+code, what percentage of the run time is spent in the 'lm' function, based on
+the 'by.total' method of normalization shown in 'summaryRprof()'?
+
+```{r q8}
+question('',
+  answer('50%'),
+  answer('23%'),
+  answer('It is impossible to tell.'),
+  answer('100%',correct = TRUE))
+```
+
+### 9.
+
+```{r q9}
+question("When using 'system.time()', what is the user time?",
+  answer("It is the 'wall-clock' time it takes to evaluate an expression"),
+  answer("It is the time spent by the CPU evaluating an expression",
+         correct = TRUE),
+  answer("It is a measure of network latency"),
+  answer("It is the time spent by the CPU waiting for other tasks to finish"))
+```
+
+### 10.
+
+```{r q10}
+question("If a computer has more than one available processor and R is able to
+         take advantage of that, then which of the following is true when using
+         'system.time()'?",
+  answer("elapsed time may be smaller than user time",correct = TRUE),
+  answer("user time is always smaller than elapsed time"),
+  answer("user time is 0"),
+  answer("elapsed time is 0"))
+```

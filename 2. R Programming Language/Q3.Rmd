@@ -1,0 +1,113 @@
+---
+title: "Q3"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE,comment = "")
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+### 1.
+
+Take a look at the 'iris' dataset that comes with R. The data can be loaded with the code:
+
+```{r w1,eval = FALSE,echo = TRUE}
+library(datasets)
+data(iris)
+?iris
+```
+
+There will be an object called 'iris' in your workspace. In this dataset, what
+is the mean of 'Sepal.Length' for the species virginica? Please round your
+answer to the nearest whole number.
+
+(Only enter the numeric result and nothing else.)
+
+```{r q1,echo = TRUE}
+round(mean(iris$Sepal.Length[iris$Species == 'virginica'],na.rm = TRUE))
+```
+
+Alternative solution.
+
+```{r q1a,echo = TRUE}
+with(iris,tapply(Sepal.Length,Species,mean,na.rm = TRUE))
+```
+
+### 2.
+
+```{r q2}
+question("Continuing with the 'iris' dataset from the previous question, what R
+         code returns a vector of the means of the variable
+         'Sepal.Length','Sepal.Width','Petal.Length' and 'Petal.Width'?",
+  answer('apply(iris[, 1:4], 2, mean)',correct = TRUE),
+  answer('colMeans(iris)'),
+  answer('apply(iris[, 1:4], 1, mean)'),
+  answer('rowMeans(iris[, 1:4])'),
+  answer('apply(iris, 1, mean)'),
+  answer('apply(iris, 2, mean)'))
+```
+
+### 3.
+Load the 'mtcars' dataset in R with the following code
+
+```{r w,eval = FALSE,echo = TRUE}
+library(datasets)
+data(mtcars)
+?mtcars
+```
+
+```{r q3}
+question('How can one calculate the average miles per gallon (mpg) by number of
+         cylinders in the car (cyl)? Select all that apply.',
+  answer('sapply(mtcars, cyl, mean)'),
+  answer('mean(mtcars$mpg, mtcars$cyl)'),
+  answer('sapply(split(mtcars$mpg, mtcars$cyl), mean)',correct = TRUE),
+  answer('tapply(mtcars$mpg, mtcars$cyl, mean)',correct = TRUE),
+  answer('with(mtcars, tapply(mpg, cyl, mean))',correct = TRUE),
+  answer('lapply(mtcars, mean)'),
+  answer('apply(mtcars, 2, mean)'),
+  answer('split(mtcars, mtcars$cyl)'),
+  answer('tapply(mtcars$cyl, mtcars$mpg, mean)'))
+```
+
+
+### 4.
+
+Continuing with the 'mtcars' dataset from the previous Question, what is the
+absolute difference between the average horsepower of 4-cylinder cars and the
+average horsepower of 8-cylinder cars?
+
+(Please round your final answer to the nearest whole number. Only enter the
+numeric result and nothing else.)
+
+```{r q4,echo = TRUE}
+library(dplyr,warn.conflicts = FALSE)
+mtcars %>% group_by(cyl) %>% summarise(m = mean(hp)) -> d
+round(d$m[3] - d$m[1])
+```
+
+### 5.
+
+If you run
+
+```{r,eval = FALSE,echo = TRUE}
+debug(ls)
+```
+
+what happens when you next call the 'ls' function?
+
+```{r q5}
+question('',
+  answer("Execution of 'ls' will suspend at the beginning of the function and
+         you will be in the browser.",correct = TRUE),
+  answer("The 'ls' function will execute as usual."),
+  answer("The 'ls' function will return an error."),
+  answer("You will be prompted to specify at which line of the function you
+         would like to suspend execution and enter the browser."))
+```

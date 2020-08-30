@@ -1,0 +1,1 @@
+Book for an overview of data science can be downloaded [here](http://leanpub.com/datastyle).

@@ -1,0 +1,72 @@
+---
+title: "Quiz 1"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+### 1.
+
+```{r 1}
+question("Which of the following are courses in the Data Science
+         Specialization? Select all that apply.",
+            answer("Python Programming"),
+            answer("Exploratory Data Analysis",correct = TRUE),
+            answer("Statistical Inference", correct = TRUE),
+            answer("Introduction To Hadoop")
+  )
+```
+
+### 2.
+
+```{r 2}
+question("Why are we using R for the course track? Select all that apply.",
+  answer("R is free.",correct = TRUE),
+  answer("R is a general purpose programming language."),
+  answer("has a large number of add on packages that are useful for data
+         analysis.",correct = TRUE),
+  answer("R allows object oriented programming."),
+  answer("R has a nice IDE, Rstudio."))
+```
+
+### 3.
+
+```{r 3}
+question("What are good ways to find answers to questions in this course track? Select all that apply.",
+  answer("Posting homework assignments to mailing lists."),
+  answer("Posting to the course discussion forum.",correct = TRUE),
+  answer("Emailing the community TAs."),
+  answer("Searching Google.",correct = TRUE))
+```
+
+### 4.
+
+```{r 4}
+question("What are characteristics of good questions on the message boards?
+         Select all that apply.",
+  answer("Describes the goal of the analysis.",correct = TRUE),
+  answer("Assumes that you've discovered a bug in R."),
+  answer("Provides no details."),
+  answer("Explicitly lists versions of software being used.",correct = TRUE),
+  answer("Begs for help without providing information."),
+  answer("Provides the minimum amount of information necessary to communicate the problem.",correct = TRUE))
+```
+
+### 5.
+
+```{r 5}
+question("Which of the following packages provides machine learning functionality? Select all that apply",
+  answer("kernlab",correct = TRUE),
+  answer("cacheSweave"),
+  answer("knitr"),
+  answer("pamr",correct = TRUE),
+  answer("rpart",correct = TRUE))
+```

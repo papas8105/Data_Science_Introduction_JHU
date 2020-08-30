@@ -1,0 +1,92 @@
+---
+title: "Quiz 3"
+output: learnr::tutorial
+runtime: shiny_prerendered
+keep_md: TRUE
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+### 1.
+
+```{r 1}
+question("We take a random sample of individuals in a population and identify
+         whether they smoke and if they have cancer. We observe that there is a
+         strong relationship between whether a person in the sample smoked or
+         not and whether they have lung cancer. We claim that the smoking is
+         related to lung cancer in the larger population. We explain we think
+         that the reason for this relationship is because cigarette smoke
+         contains known carcinogens such as arsenic and benzene, which make
+         cells in the lungs become cancerous.",
+  answer("This is an example of a causal data analysis."),
+  answer("This is an example of an inferential data analysis.",correct = TRUE),
+  answer("This is an example of an descriptive data analysis."),
+  answer("This is an example of a predictive data analysis."))
+```
+
+### 2.
+
+```{r 2}
+question("What is the most important thing in Data Science?",
+  answer("The data."),
+  answer("Hacking skills."),
+  answer("Knowing Hadoop and Pig."),
+  answer("Working with large datasets."),
+  answer("The question you are trying to answer.",correct = TRUE)
+)
+```
+
+### 3.
+
+If the goal of a study was to relate Martha Stewart Living Subscribers to Our
+Site's Users based on the number of people that lived in each region of the US,
+what would be the potential problem?
+
+```{r image}
+library(png)
+library(grid)
+img <- readPNG("im.png")
+grid.raster(img)
+```
+
+```{r 3}
+question("",
+  answer("There would be confounding because the number of people that live in
+         an area is related to both Martha Stewart Living Subscribers and Our
+         Site's Users.",correct = TRUE),
+  answer("We couldn't be sure whether subscribing to Martha Steward Living
+         causes people to be Users of Our Site or the other way around."),
+  answer("We would be performing inference on the relationship between Martha
+         Stewart Living Subscribers and Our Site's Users."),
+  answer("We wouldn't know the sensitivity of our predictions."))
+```
+
+### 4.
+
+```{r 4}
+question("What is an experimental design tool that can be used to address
+         variables that may be confounders at the design phase of an
+         experiment?",
+  answer("Using regression models."),
+  answer("Fixing variables.",correct = TRUE),
+  answer("Data cleaning."),
+  answer("Using data from a database."),
+  answer("Stratifying variables",correct = TRUE))
+```
+
+### 5.
+
+```{r 5}
+question("What is the reason behind the explosion of interest in big data?",
+  answer("We recently discovered ways to use data to answer scientific and business questions."),
+  answer("We recently discovered ways to use data to make predictions."),
+  answer("We have better experimental design now than previously."),
+  answer("The price and difficulty of collecting and storing data has dramatically dropped.",correct = TRUE))
+```
