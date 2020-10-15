@@ -1,0 +1,122 @@
+---
+title: "Quiz 1"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+
+### 1.
+
+```{r 1}
+question("Which of the following is a principle of analytic graphics?",
+         answer("Make judicious use of color in your scatterplots."),
+         answer("Only do what your tools allow you to do"),
+         answer("Show box plots (univariate summaries)"),
+         answer("Integrate multiple modes of evidence",correct = TRUE),
+         answer("Don't plot more than two variables at at time"))
+```
+
+### 2.
+
+```{r 2}
+question("What is the role of exploratory graphs in data analysis?",
+         answer("Only a few are constructed."),
+         answer("They are made for formal presentations."),
+         answer("Axes, legends, and other details are clean and exactly detailed."),
+         answer("They are typically made very quickly.",correct = TRUE))
+```
+
+### 3.
+
+```{r 3}
+question("Which of the following is true about the base plotting system?",
+         answer("Plots are created and annotated with separate functions",correct = TRUE),
+         answer("The system is most useful for conditioning plots"),
+         answer("Margins and spacings are adjusted automatically depending on the type of plot and the data"),
+         answer("Plots are typically created with a single function call"))
+```
+
+
+### 4.
+
+```{r 4}
+question("Which of the following is an example of a valid graphics device in R?",
+         answer("A file folder"),
+         answer("A PDF file",correct = TRUE),
+         answer("A socket connection"),
+         answer("The keyboard"))
+```
+
+### 5.
+
+```{r 5}
+question("Which of the following is an example of a vector graphics device in R?",
+         answer("JPEG"),
+         answer("TIFF"),
+         answer("GIF"),
+         answer("SVG",correct = TRUE),
+         answer("PNG"))
+```
+
+
+### 6.
+
+```{r 6}
+question("Bitmapped file formats can be most useful for",
+         answer("Plots that may need to be resized"),
+         answer("Scatterplots with many many points",correct = TRUE),
+         answer("Plots that require animation or interactivity"),
+         answer("Plots that are not scaled to a specific resolution"))
+```
+
+### 7.
+
+```{r 7}
+question("Which of the following functions is typically used to add elements to a plot in the base graphics system?",
+         answer("points()",correct = TRUE),
+         answer("hist()"),
+         answer("plot()"),
+         answer("boxplot()"))
+```
+
+### 8.
+
+```{r 8}
+question("Which function opens the screen graphics device on Windows?",
+         answer("jpeg"),
+         answer("postscript()"),
+         answer("windows()",correct = TRUE),
+         answer("xfig()"))
+```
+
+### 9.
+
+```{r 9} 
+question("What does the 'pch' option to par() control?",
+         answer("the orientation of the axis labels on the plot"),
+         answer("the line width in the base graphics system"),
+         answer("the size of the plotting symbol in a scatterplot"),
+         answer("the plotting symbol/character in the base graphics system",correct = TRUE))
+```
+
+### 10.
+
+```{r 10}
+question("If I want to save a plot to a PDF file, which of the following is a correct way of doing that?",
+         answer("Construct the plot on the screen device and then copy it to a PDF file with dev.copy2pdf()",
+                correct = TRUE),
+         answer("Open the PostScript device with postscript(), construct the plot, then close the device with
+                 dev.off()."),
+         answer("Construct the plot on the PNG device with png(), then copy it to a PDF with dev.copy2pdf()."),
+         answer("Open the screen device with quartz(), construct the plot, and then close the device with dev.off().")
+)
+```

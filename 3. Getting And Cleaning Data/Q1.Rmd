@@ -1,0 +1,141 @@
+---
+title: "Quiz 1"
+author: "George Papadopoulos </br> pgeorgios8@gmail.com"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+---
+<style>body{text-align: justify}</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,comment = '')
+options(warn=-1)
+```
+
+### 1.
+
+The American Community Survey distributes downloadable data about United States communities. Download
+the 2006 microdata survey about housing for the state of Idaho using download.file() from here:
+
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv
+
+and load the data into R. The code book, describing the variable names is here:
+
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf
+
+How many properties are worth $1,000,000 or more?
+
+<u>answer</u> 
+
+In an R terminal we type,
+
+```{r a1a}
+url  <- 'https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv'
+download.file(url,'data.csv')
+data <- read.csv('data.csv')
+```
+
+then in the code book we read that the values greater that $1,000,000 are denoted with '24', so
+
+```{r a1b}
+nrow(data %>% select(VAL) %>% na.omit() %>% filter(VAL == 24))
+```
+
+gives us the answer.
+
+### 2.
+
+Consider the variable FES in the code book. Which of the "tidy data" principles does this variable
+violate?
+
+<u>answer</u> 
+
+Tidy data has one variable per column.
+
+### 3.
+
+Download the Excel spreadsheet on Natural Gas Acquisition Program here:
+
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx
+
+Read rows 18-23 and columns 7-15 into R and assign the result to a variable called 'dat', what is the
+value of the product of the columns 'Zip' and 'dat'?
+
+<u>answer</u> 
+
+```{r a3}
+library(openxlsx)
+url  <- 'https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx'
+data <- read.xlsx(url,sheet=1,rows=18:23,cols=7:15)
+sum(data$Zip*data$Ext,na.rm = TRUE)
+```
+
+### 4.
+
+Read the XML data on Baltimore restaurants from here:
+
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml
+
+How many restaurants have zipcode 21231?
+
+<u>answer</u> 
+
+```{r a4}
+library(XML)
+url <- 'https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml'
+data.xml <- download.file(url,'data.xml')
+data <- xmlParse('data.xml')
+d <- xpathSApply(data,"//zipcode[text()='21231']",xmlValue)
+length(d)
+```
+
+### 5.
+
+The American Community Survey distributes downloadable data about United States communities. Download
+the 2006 microdata survey about housing for the state of Idaho using download.file() from here:
+
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv
+
+Which of the following is the fastest way to calculate the average value of the variable pwgtp15
+broken down by sex using the data.table package?:
+
+<list>
+<li>sapply(split(DT\$pwgtp15,DT\$SEX),mean)</li>
+<li>tapply(DT\$pwgtp15,DT\$SEX,mean)</li>
+<li>mean(DT\$pwgtp15,by=DT\$SEX)</li>
+<li>DT[,mean(pwgtp15),by=SEX]</li>
+<li>rowMeans(DT)[DT\$SEX==1]; rowMeans(DT)[DT\$SEX==2]</li>
+<li>mean(DT[DT\$SEX==1,]\$pwgtp15); mean(DT[DT\$SEX==2,]\$pwgtp15)</li>
+</list>
+
+<u>answer</u>
+
+```{r a5}
+library(data.table,warn.conflicts = F)
+fname <- "housing.csv"
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv",fname)
+DT <- fread(input = fname, sep = ",")
+library(microbenchmark)
+microbenchmark(sapply(split(DT$pwgtp15,DT$SEX),mean))
+microbenchmark(tapply(DT$pwgtp15,DT$SEX,mean))
+microbenchmark(mean(DT$pwgtp15,by=DT$SEX))
+microbenchmark(DT[,mean(pwgtp15),by=SEX])
+microbenchmark(function(){rowMeans(DT)[DT$SEX==1];rowMeans(DT)[DT$SEX==2]})
+microbenchmark(function(){mean(DT[DT$SEX==1,]$pwgtp15);mean(DT[DT$SEX==2,]$pwgtp15)})
+```
+
+It is the direct call from the data.table library, the fourth one (C is always faster)!
+
+### Unlink All Files Downloaded And Detach Libraries
+
+```{r clear}
+unlink(c('housing.csv','data.xml','data.xlsx','data.csv'))
+rm(list = ls())
+detach(package:dplyr,unload = TRUE)
+detach(package:openxlsx,unload = TRUE)
+detach(package:XML,unload = TRUE)
+detach(package:data.table,unload = TRUE)
+detach(package:microbenchmark,unload = TRUE)
+```
