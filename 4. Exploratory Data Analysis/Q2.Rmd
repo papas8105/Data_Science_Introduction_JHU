@@ -107,7 +107,8 @@ data(airquality)
 </pre>
 
 ```{r 7}
-question("I am interested in examining how the relationship between ozone and wind speed varies across each month. What would be the appropriate code to visualize that using ggplot2?",
+question("I am interested in examining how the relationship between ozone and wind speed varies across each month. What would be the
+         appropriate code to visualize that using ggplot2?",
   answer('
   
          airquality = transform(airquality, Month = factor(Month))
