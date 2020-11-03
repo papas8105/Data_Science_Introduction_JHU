@@ -1,0 +1,77 @@
+---
+title: "Quiz 1"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+
+### 1.
+
+```{r q1}
+question("Which of the following are components in building a machine learning algorithm?",
+         answer("Training and test sets"),
+         answer("Deciding on an algorithm",correct = TRUE),
+         answer("Statistical inference"),
+         answer("Artificial intelligence"),
+         answer("Machine learning"))
+```
+
+### 2.
+
+```{r q2}
+question("Suppose we build a prediction algorithm on a data set and it is 100% accurate on that data set. 
+         Why might the algorithm not work well if we collect a new data set?",
+         answer("We have used neural networks which has notoriously bad performance."),
+         answer("We may be using bad variables that don't explain the outcome."),
+         answer("We are not asking a relevant question that can be answered with machine learning."),
+         answer("Our algorithm may be overfitting the training data, predicting both the signal and the noise.",
+                correct = TRUE))
+```
+
+### 3.
+
+```{r q3}
+question("What are typical sizes for the training and test sets?",
+         answer("50% training set, 50% test set"),
+         answer("60% in the training set, 40% in the testing set.",correct = TRUE),
+         answer("90% training set, 10% test set"),
+         answer("10% test set, 90% training set"))
+```
+
+### 4.
+
+```{r q4}
+question("What are some common error rates for predicting binary variables (i.e. variables with two possible values like yes/no, disease/normal, clicked/didn't click)? Check the correct answer(s).",
+         answer("Root mean squared error"),
+         answer("R^2"),
+         answer("Predictive value of a positive",correct = TRUE),
+         answer("Median absolute deviation"),
+         answer("Correlation"))
+```
+
+### 5.
+
+```{r q5}
+question("Suppose that we have created a machine learning algorithm that predicts whether a link will be clicked
+         with 99% sensitivity and 99% specificity. The rate the link is clicked is 1/1000 of visits to a website. If
+         we predict the link will be clicked on a specific visit, what is the probability it will actually be
+         clicked?",
+         answer("99%"),
+         answer("89.9%"),
+         answer("9%"),
+         answer("0.009%",correct = TRUE))
+```
+
+Explanation for 5: 
+$P(C|+) = \frac{P(+|C)P(C)}{P(+)}=\frac{P(+|C)P(C)}{P(+|C)P(C)+P(+|C^c)P(C^c)}$
+$=\frac{0.99\cdot0.001}{0.99\cdot 0.001 + (1-0.99)\cdot(1-0.001)}\approx 0.09$
+
