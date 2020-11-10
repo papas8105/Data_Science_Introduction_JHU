@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE,comment = "")
 
 ### 1.
 
-Take a look at the 'iris' dataset that comes with R. The data can be loaded with the code:
+<b>Take a look at the 'iris' dataset that comes with R. The data can be loaded with the code:</b>
 
 ```{r w1,eval = FALSE,echo = TRUE}
 library(datasets)
@@ -24,17 +24,17 @@ data(iris)
 ?iris
 ```
 
-There will be an object called 'iris' in your workspace. In this dataset, what
+<b>There will be an object called 'iris' in your workspace. In this dataset, what
 is the mean of 'Sepal.Length' for the species virginica? Please round your
 answer to the nearest whole number.
 
-(Only enter the numeric result and nothing else.)
+(Only enter the numeric result and nothing else.)</b>
 
 ```{r q1,echo = TRUE}
 round(mean(iris$Sepal.Length[iris$Species == 'virginica'],na.rm = TRUE))
 ```
 
-Alternative solution.
+<b>Alternative solution.</b>
 
 ```{r q1a,echo = TRUE}
 with(iris,tapply(Sepal.Length,Species,mean,na.rm = TRUE))
@@ -55,7 +55,7 @@ question("Continuing with the 'iris' dataset from the previous question, what R
 ```
 
 ### 3.
-Load the 'mtcars' dataset in R with the following code
+<b>Load the 'mtcars' dataset in R with the following code</b>
 
 ```{r w,eval = FALSE,echo = TRUE}
 library(datasets)
@@ -80,12 +80,12 @@ question('How can one calculate the average miles per gallon (mpg) by number of
 
 ### 4.
 
-Continuing with the 'mtcars' dataset from the previous Question, what is the
+<b>Continuing with the 'mtcars' dataset from the previous Question, what is the
 absolute difference between the average horsepower of 4-cylinder cars and the
 average horsepower of 8-cylinder cars?
 
 (Please round your final answer to the nearest whole number. Only enter the
-numeric result and nothing else.)
+numeric result and nothing else.)</b>
 
 ```{r q4,echo = TRUE}
 library(dplyr,warn.conflicts = FALSE)
@@ -95,13 +95,13 @@ round(d$m[3] - d$m[1])
 
 ### 5.
 
-If you run
+<b>If you run</b>
 
 ```{r,eval = FALSE,echo = TRUE}
 debug(ls)
 ```
 
-what happens when you next call the 'ls' function?
+<b>what happens when you next call the 'ls' function?</b>
 
 ```{r q5}
 question('',

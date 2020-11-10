@@ -68,8 +68,8 @@ question("Suppose that we have created a machine learning algorithm that predict
          clicked?",
          answer("99%"),
          answer("89.9%"),
-         answer("9%"),
-         answer("0.009%",correct = TRUE))
+         answer("9%",correct = TRUE),
+         answer("0.009%"))
 ```
 
 Explanation for 5: 

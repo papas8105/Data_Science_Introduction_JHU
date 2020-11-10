@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE,comment = '')
 
 ### 1.
 
-Suppose I define the following function in R,
+<b>Suppose I define the following function in R,</b>
 
 ```{r w1,eval = FALSE,echo = TRUE}
 cube <- function(x, n) {
@@ -24,13 +24,13 @@ cube <- function(x, n) {
 }
 ```
 
-What is the result of running
+<b>What is the result of running</b>
 
 ```{r w2,eval = FALSE,echo = TRUE}
 cube(3)
 ```
 
-in R after defining this function?
+<b>in R after defining this function?</b>
 
 
 ```{r 1}
@@ -43,7 +43,7 @@ question('',
 
 ### 2.
 
-The following code will produce a warning in R. Why?
+<b>The following code will produce a warning in R. Why?</b>
 
 ```{r w3,eval = FALSE,echo = TRUE}
 x <- 1:10
@@ -58,12 +58,13 @@ question('',
   answer("The expression uses curly braces."),
   answer("You cannot set 'x' to be 0 because 'x' is a vector and 0 is a scalar."),
   answer("The syntax of this R expression is incorrect."),
-  answer("'x' is a vector of length 10 and 'if' can only test a single logical statement.",correct = TRUE))
+  answer("'x' is a vector of length 10 and 'if' can only test a single logical statement.",
+         correct = TRUE))
 ```
 
 ### 3.
 
-Consider the following code.
+<b>Consider the following code.</b>
 
 ```{r w4,eval = FALSE,echo = TRUE}
 f <- function(x) {
@@ -75,14 +76,14 @@ f <- function(x) {
 }
 ```
 
-If then I run in R
+<b>If then I run in R</b>
 
 ```{r w5,eval = FALSE,echo = TRUE}
 z <- 10
 f(3)
 ```
 
-what value is returned?
+<b>what value is returned?</b>
 
 ```{r q3}
 question('',
@@ -94,7 +95,7 @@ question('',
 
 ### 4.
 
-Consider the following expression.
+<b>Consider the following expression.</b>
 
 ```{r w6,eval = FALSE,echo = TRUE}
 x <- 5
@@ -105,7 +106,7 @@ y <- if(x < 3) {
 }
 ```
 
-What is the value of 'y' after evaluating this expression?
+<b>What is the value of 'y' after evaluating this expression?</b>
 
 ```{r q4}
 question('',
@@ -117,7 +118,7 @@ question('',
 
 ### 5.
 
-Consider the following R function,
+<b>Consider the following R function,</b>
 
 ```{r w7,eval = FALSE,echo = TRUE}
 h <- function(x, y = NULL, d = 3L) {
@@ -134,7 +135,7 @@ h <- function(x, y = NULL, d = 3L) {
 }
 ```
 
-which symbol in the above function is a free variable?
+<b>which symbol in the above function is a free variable?</b>
 
 ```{r q5}
 question('',

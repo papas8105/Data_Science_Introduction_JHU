@@ -107,32 +107,20 @@ data(airquality)
 </pre>
 
 ```{r 7}
-question("I am interested in examining how the relationship between ozone and wind speed varies across each month. What would be the
-         appropriate code to visualize that using ggplot2?",
-  answer('
-  
-         airquality = transform(airquality, Month = factor(Month))
-         
+question("I am interested in examining how the relationship between ozone and wind speed varies across
+         each month. What would be the appropriate code to visualize that using ggplot2?",
+  answer('airquality = transform(airquality, Month = factor(Month))</br>
          qplot(Wind, Ozone, data = airquality, facets = . ~ Month)',correct = TRUE),
-  answer('
-         qplot(Wind, Ozone, data = airquality)
-         '),
-  answer('
-         qplot(Wind, Ozone, data = airquality, geom = "smooth")
-         '),
-  answer('
-         qplot(Wind, Ozone, data = airquality, facets = . ~ factor(Month))
-         ')
-  
-  )
-
+  answer('qplot(Wind, Ozone, data = airquality)'),
+  answer('qplot(Wind, Ozone, data = airquality, geom = "smooth")'),
+  answer('qplot(Wind, Ozone, data = airquality, facets = . ~ factor(Month))'))
 ```
 
 ### 8.
 
 ```{r 8}
 question("What is a geom in the ggplot2 system?",
-         asnwer("a method for mapping data to attributes like color and size"),
+         answer("a method for mapping data to attributes like color and size"),
          answer("a method for making conditioning plots"),
          answer("a statistical transformation"),
          answer("a plotting object like point, line, or other shape",correct = TRUE))
@@ -159,8 +147,8 @@ question("I was expecting a scatterplot of 'votes' and 'rating' to appear. What'
 
 ### 10.
 
-The following code creates a scatterplot of 'votes' and 'rating' from the movies dataset in the ggplot2 package. After 
-loading the ggplot2 package with the library() function, I can run
+<b>The following code creates a scatterplot of 'votes' and 'rating' from the movies dataset in the
+ggplot2 package. After loading the ggplot2 package with the library() function, I can run</b>
 
 <pre>
 qplot(votes, rating, data = movies)

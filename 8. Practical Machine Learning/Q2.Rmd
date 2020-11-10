@@ -1,0 +1,196 @@
+---
+title: "Quiz 2"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+
+### 1.
+
+<b>Load the Alzheimer's disease data using the commands:</b>
+
+```{r echo=TRUE,comment = ''}
+library(AppliedPredictiveModeling)
+data(AlzheimerDisease)
+```
+
+```{r q1}
+question("Which of the following commands will create non-overlapping training and test sets with about
+         50% of the observations assigned to each?",
+         answer("adData = data.frame(diagnosis,predictors)</br>
+         testIndex = createDataPartition(diagnosis, p = 0.50,list=FALSE)</br>
+         training = adData[-testIndex,]</br>
+         testing = adData[testIndex,]",correct = TRUE),
+         answer("adData = data.frame(diagnosis,predictors)</br>
+         train = createDataPartition(diagnosis, p = 0.50,list=FALSE)</br>
+         test = createDataPartition(diagnosis, p = 0.50,list=FALSE)"),
+         answer("adData = data.frame(diagnosis,predictors)</br>
+         trainIndex = createDataPartition(diagnosis,p=0.5,list=FALSE)</br>
+         training = adData[-trainIndex,]</br>
+         testing = adData[-trainIndex,]"),
+         answer("adData = data.frame(diagnosis,predictors)</br>
+         trainIndex = createDataPartition(diagnosis,p=0.5,list=FALSE)</br>
+         training = adData[trainIndex,]</br>
+         testing = adData[trainIndex,]"))
+```
+
+### 2.
+
+<b>Load the cement data using the commands:</b>
+
+```{r,echo=TRUE,comment = ''}
+library(AppliedPredictiveModeling)
+data(concrete)
+library(caret)
+set.seed(1000)
+inTrain  <- createDataPartition(mixtures$CompressiveStrength, p = 3/4)[[1]]
+training <- mixtures[ inTrain,]
+testing  <- mixtures[-inTrain,]
+```
+
+Make a plot of the outcome (CompressiveStrength) versus the index of the samples. Color by each of the
+variables in the data set (you may find the cut2() function in the Hmisc package useful for turning
+continuous covariates into factors). 
+
+```{r plot2,echo = TRUE,comment = ''}
+## Since there are three types of cement based on compressive strength 
+## we will color based on a cut of the compressiveStrength in breaks of three
+## and base the color in each case on this cut
+par(mfrow = c(1,3))
+cols <- colorRampPalette(c('red','yellow'))
+for (ii in names(training)[1:3]) {
+  plot(training$CompressiveStrength,col = cols(3)[cut(training[,ii],breaks = 3)],
+       main = paste('color by',ii),pch = 19,ylab = 'comp. strength')
+}
+for (ii in names(training)[4:6]) {
+  plot(training$CompressiveStrength,col = cols(3)[cut(training[,ii],breaks = 3)],
+       main = paste('color by',ii),pch = 19,ylab = 'comp. strength')
+}
+for (ii in names(training)[7:9]) {
+  plot(training$CompressiveStrength,col = cols(3)[cut(training[,ii],breaks = 3)],
+       main = paste('color by',ii),pch = 19,ylab = 'comp. strength')
+}
+par(mfrow = c(1,1))
+```
+
+```{r q2}
+question('What do you notice in these plots?',
+         answer("There is a non-random pattern in the plot of the outcome versus index that is perfectly
+         explained by the FlyAsh variable so there may be a variable missing."),
+         answer("There is a non-random pattern in the plot of the outcome versus index."),
+         answer("There is a non-random pattern in the plot of the outcome versus index that is perfectly
+         explained by the Age variable so there may be a variable missing."),
+         answer("There is a non-random pattern in the plot of the outcome versus index that does not
+         appear to be perfectly explained by any predictor suggesting a variable may be missing.",
+         correct = TRUE))
+```
+
+### 3.
+
+<b>Using the data loaded in Q2, make a histogram and confirm the SuperPlasticizer variable is
+skewed. Normally you might use the log transform to try to make the data more symmetric. Why would that 
+be a poor choice for this variable?</b>
+
+```{r}
+hist(training$Superplasticizer,col = 'red',ylab = 'superplasticizer',main = '',xlab = '')
+```
+
+```{r q3}
+question("",
+        answer("The SuperPlasticizer data include negative values so the log transform can not be
+               performed."),
+        answer("There are values of zero so when you take the log() transform those values will be
+               -Inf.",correct = TRUE),
+        answer("The log transform produces negative values which can not be used by some classifiers."),
+        answer("The log transform does not reduce the skewness of the non-zero values of
+               SuperPlasticizer"))
+```
+
+### 4.
+
+<b>We have loaded the Alzheimer's disease data in Q1. Using the commands:</b>
+
+```{r,echo = TRUE,comment = ''}
+set.seed(3433)
+adData  <- data.frame(diagnosis,predictors)
+inTrain <- createDataPartition(adData$diagnosis, p = 3/4)[[1]]
+training <- adData[ inTrain,]
+testing  <- adData[-inTrain,]
+```
+
+<b>Find all the predictor variables in the training set that begin with IL. Perform principal components
+on these variables with the preProcess() function from the caret package. Calculate the number of
+principal components needed to capture 90% of the variance.</b>
+
+```{r,echo = TRUE,comment = ''}
+IL.predictors <- grep("^IL",names(training),ignore.case = TRUE,value = TRUE)
+training <- training[,IL.predictors]
+preProcess(training,method = 'pca',thresh = 0.9)
+```
+
+```{r q4}
+question("Find all the predictor variables in the training set that begin with IL. Perform principal
+         components on these variables with the preProcess() function from the caret package. Calculate
+         the number of principal components needed to capture 90% of the variance. 
+         How many are there?",
+         answer("5"),
+         answer("12"),
+         answer("10"),
+         answer("9",correct = TRUE))
+```
+
+### 5.
+
+<b>With the Alzheimer's data again, using the commands:</b>
+
+```{r,echo = TRUE,comment = ''}
+## This doesn't work with the lastest R so we will use an older rng 
+## RNGversion("3.0.0")
+library(caret)
+library(AppliedPredictiveModeling)
+set.seed(3433)
+data(AlzheimerDisease)
+adData = data.frame(diagnosis,predictors)
+inTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]
+training = adData[ inTrain,]
+testing = adData[-inTrain,]
+```
+
+<b>Create a training data set consisting of only the predictors with variable names beginning with IL
+and the diagnosis. Build two predictive models, one using the predictors as they are and one using PCA
+with principal components explaining 80% of the variance in the predictors. Use method="glm" in the
+train function.</b>
+
+```{r echo = TRUE,comment = ''}
+training.new <- training[,grep("^(IL|diagnosis)",names(training),value = TRUE,ignore.case = TRUE)] 
+testing.new  <- testing[,grep("(IL|diagnosis)",names(testing))]
+nopca_preproc  <- train(diagnosis ~ .,data = training.new,method = 'glm')
+confusionMatrix(predict(nopca_preproc,testing.new),testing$diagnosis)
+training.pca <- preProcess(training.new,method = 'pca',thres = 0.8)
+training.pca <- predict(training.pca,training.new)
+testing.pca  <- preProcess(testing.new,method = 'pca',thres = 0.8)
+testing.pca  <- predict(testing.pca,testing.new)
+pca_preproc  <- train(diagnosis ~ .,data = training.pca,method = 'glm')
+confusionMatrix(predict(pca_preproc,testing.pca),testing$diagnosis)
+```
+
+```{r q5}
+question("What is the accuracy of each method in the test set? Which is more accurate?",
+         answer("Non-PCA Accuracy: 0.65</br>
+         PCA Accuracy: 0.72",correct = TRUE),
+         answer("Non-PCA Accuracy: 0.75</br>
+         PCA Accuracy: 0.71"),
+         answer("Non-PCA Accuracy: 0.72</br>
+         PCA Accuracy: 0.65"),
+         answer("Non-PCA Accuracy: 0.72</br>
+         PCA Accuracy: 0.71"))
+```

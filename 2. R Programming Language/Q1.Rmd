@@ -152,7 +152,8 @@ question("Suppose I have a vector x <- c(3, 5, 1, 10, 12, 6) and I want to set a
 ```
 
 
-Use the [Week 1 Quiz Data Set](https://d396qusza40orc.cloudfront.net/rprog/data/quiz1_data.zip) to answer questions 11-20.
+<b>Use the [Week 1 Quiz Data Set](https://d396qusza40orc.cloudfront.net/rprog/data/quiz1_data.zip)
+to answer questions 11-20.</b>
 
 ### 11.
 

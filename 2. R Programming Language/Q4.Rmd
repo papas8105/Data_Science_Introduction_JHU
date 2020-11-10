@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE,comment = "")
 
 ### 1.
 
-What is produced at the end of this snippet of R code?
+<b>What is produced at the end of this snippet of R code?</b>
 
 ```{r,echo = TRUE,eval = FALSE}
 set.seed(1)
@@ -69,7 +69,7 @@ question("Which function can be used to evaluate the inverse cumulative
 
 ### 5.
 
-What does the following code do?
+<b>What does the following code do?</b>
 
 ```{r,echo = TRUE,eval = FALSE}
 set.seed(10)
@@ -109,7 +109,7 @@ question("What aspect of the R runtime does the profiler keep track of when an
 
 ### 8.
 
-Consider the following R code
+<b>Consider the following R code</b>
 
 ```{r,echo = TRUE,eval = FALSE}
 library(datasets)
@@ -118,9 +118,9 @@ fit <- lm(y ~ x1 + x2)
 Rprof(NULL)
 ```
 
-(Assume that y, x1, and x2 are present in the workspace.) Without running the
+<b>(Assume that y, x1, and x2 are present in the workspace.) Without running the
 code, what percentage of the run time is spent in the 'lm' function, based on
-the 'by.total' method of normalization shown in 'summaryRprof()'?
+the 'by.total' method of normalization shown in 'summaryRprof()'?</b>
 
 ```{r q8}
 question('',

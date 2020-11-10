@@ -58,13 +58,15 @@ question("What are characteristics of good questions on the message boards?
   answer("Provides no details."),
   answer("Explicitly lists versions of software being used.",correct = TRUE),
   answer("Begs for help without providing information."),
-  answer("Provides the minimum amount of information necessary to communicate the problem.",correct = TRUE))
+  answer("Provides the minimum amount of information necessary to communicate the problem.",
+         correct = TRUE))
 ```
 
 ### 5.
 
 ```{r 5}
-question("Which of the following packages provides machine learning functionality? Select all that apply",
+question("Which of the following packages provides machine learning functionality? Select all that
+         apply",
   answer("kernlab",correct = TRUE),
   answer("cacheSweave"),
   answer("knitr"),

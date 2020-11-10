@@ -46,9 +46,9 @@ question("What is the most important thing in Data Science?",
 
 ### 3.
 
-If the goal of a study was to relate Martha Stewart Living Subscribers to Our
+<b>If the goal of a study was to relate Martha Stewart Living Subscribers to Our
 Site's Users based on the number of people that lived in each region of the US,
-what would be the potential problem?
+what would be the potential problem?</b>
 
 ```{r image}
 library(png)
