@@ -1,0 +1,204 @@
+---
+title: 'Exploratory Analysis On $\textrm{PM}_{2.5}$ Database'
+author:
+  email: pgeorgios8@gmail.com
+  name: George Papadopoulos
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    css: style.css
+    theme: united
+    toc: yes
+---
+<style>
+  body {
+    text-align: justify}
+</style>
+
+```{r global,echo = FALSE}
+# Set the global options to remove hashes from the outputs
+knitr::opts_chunk$set(comment = '')
+options(scipen = 999)
+```
+
+# Introduction
+
+Fine particulate matter (PM2.5) is an ambient air pollutant for which there is strong evidence that it 
+is harmful to human health. In the United States, the Environmental Protection Agency (EPA) is tasked
+with setting national ambient air quality standards for fine PM and for tracking the emissions of this
+pollutant into the atmosphere. Approximatly every 3 years, the EPA releases its database on emissions of
+PM2.5. This database is known as the National Emissions Inventory (NEI). You can read more information
+about the NEI at the EPA National Emissions Inventory web site.
+
+For each year and for each type of PM source, the NEI records how many tons of PM2.5 were emitted from 
+that source over the course of the entire year. The data that we will use for this assignment are for 
+1999, 2002, 2005, and 2008.
+
+# Preprocessing
+
+## Getting The Data
+
+The data we will use can be found 
+[here](https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip), the zip file contains two 
+files.
+
+```{r get_data}
+download.file("https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip","file.zip")
+unzip("file.zip")
+```
+
+## Load Data
+We will load the data using the command __readRDS__.
+
+```{r readrds}
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
+```
+
+## Variables Explanation 
+
+After the download and the unzip operation we see two __rds__ type files in the working folder.
+
+1. PM2.5 Emissions Data $\color{red}{\verb|summarySCC_PM25.rds|}$: This file contains a data frame with 
+all of the PM2.5 emissions data for 1999, 2002, 2005, and 2008. For 
+each year, the table contains number of tons of PM2.5 emitted from a specific type of source for the 
+entire year. Here are the first few rows:
+
+```{r head_summarySCC_PM25}
+head(NEI,5)
+```
+
+* $\color{red}{\verb|fips|}$: A five-digit number (represented as a string) indicating the U.S. county
+* $\color{red}{\verb|SCC|}$: The name of the source as indicated by a digit string (see source code 
+classification table)
+* $\color{red}{\verb|Pollutant|}$: A string indicating the pollutant
+* $\color{red}{\verb|Emissions|}$: Amount of PM2.5 emitted, in tons
+* $\color{red}{\verb|type|}$: The type of source (point, non-point, on-road, or non-road)
+* $\color{red}{\verb|year|}$: The year of emissions recorded
+
+2. Source Classification Code Table $\color{red}{\verb|Source_Classification_Code.rds|}$: This table
+provides a mapping from the SCC digit strings in the Emissions table to the actual name of the
+PM2.5 source. The sources are categorized in a few different ways from more general to more specific and
+you may choose to explore whatever categories you think are most useful. For example, source “10100101”
+is known as “Ext Comb /Electric Gen /Anthracite Coal /Pulverized Coal”.
+
+### Preprocess Data
+
+Search for 'NA'.
+
+```{r }
+sum(is.na(NEI))
+```
+
+# Exploratory Analysis
+
+## Goal Of The Report
+
+The overall goal of this assignment is to explore the National Emissions Inventory database and see what
+it reports about fine particulate matter pollution in the United states over the 10-year period
+1999–2008. You may use any R package you want to support your analysis.
+
+## Questions Answered Via Plots
+
+### Question 1
+
+<b>Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base
+plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years
+1999, 2002, 2005, and 2008.</b>
+
+```{r question 1,fig.align = 'center'}
+library(dplyr,warn.conflicts = FALSE)
+options(dplyr.summarise.inform = FALSE)
+NEI$Emissions <- NEI$Emissions / 10e6
+height <- NEI %>% group_by(year) %>% summarise(total = sum(Emissions))
+barplot(as.matrix(height)[,2],xlab = 'year',ylab = expression(paste(PM[2.5],
+                                                                    'tons from all pollutants')),
+        names = as.matrix(height)[,1],
+        col = "#69b3a2",main = "Total Emissions From PM2.5 Per Year In All States")
+rm(height)
+```
+
+### Question 2
+
+<b>Have total emissions from PM2.5 decreased in the Baltimore City, Maryland
+$\color{red}{\verb|fips == "24510"|}$ from 1999 to 2008? Use the base plotting system to make a plot
+answering this question.</b>
+
+```{r question 2,fig.align = 'center'}
+height <- NEI %>% filter(fips == "24510") %>% group_by(year) %>% summarise(sum(Emissions))
+barplot(as.matrix(height)[,2],xlab = 'year',ylab = expression(paste(PM[2.5],
+                                                                    'tons from all pollutants')),
+        names = as.matrix(height)[,1],
+        col = "#69b3a2")
+title(main = "Total Emissions From PM2.5 In Baltimore")
+rm(height)
+```
+
+### Question 3
+
+<b>Of the four types of sources indicated by the $\color{red}{\verb|type|}$ type (point, nonpoint,
+onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008
+for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting
+system to make a plot answer this question.
+
+```{r question 3,fig.align = "center"}
+library(ggplot2)
+data <- NEI %>% filter(fips == '24510') %>% group_by(type,year) %>% summarise(total = sum(Emissions))
+g <- ggplot(data,aes(y = total,x = as.factor(year))) + 
+  geom_bar(stat = 'identity') + facet_grid(. ~ type)
+g + theme(axis.text.x = element_text(face = "bold", angle = 90)) + xlab("Year") + 
+  ylab(expression(paste(PM[2.5],'tons from all pollutants'))) +
+  ggtitle("PM2.5 Emissions Per Type Variable")
+rm(data)
+rm(g)
+```
+
+### Question 4
+
+<b>Across the United States, how have emissions from coal combustion-related sources changed from
+1999–2008?</b>
+
+```{r question 4,fig.align = 'center'}
+comb <- grepl("comb",SCC$SCC.Level.One, ignore.case = TRUE)
+coal <- grepl("coal",SCC$SCC.Level.Four,ignore.case = TRUE)
+both <- SCC[comb & coal,]$SCC
+data <- NEI[NEI$SCC %in% both,] %>% group_by(year) %>% summarise(total = sum(Emissions))
+barplot(data$total,xlab = 'year',ylab = expression(paste(PM[2.5],'tons from all pollutants')),
+        names = data$year,
+        col = "#69b3a2",main = "Total Pollution Coal Combustion Related")
+```
+
+### Question 5
+
+<b>How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?</b>
+
+```{r question 5,fig.align = "center"}
+options(scipen = 0)
+vehicle <- grepl("vehicle",SCC$EI.Sector,ignore.case = TRUE)
+vehicle <- SCC[vehicle,]$SCC
+data <-  NEI[NEI$SCC %in% vehicle,] %>% filter(fips == "24510") %>% group_by(year) %>% 
+  summarise(total = sum(Emissions))
+barplot(data$total,xlab = 'year',ylab = expression(paste(PM[2.5],'tons from vehicle pollution')),
+        names = data$year,
+        col = "#69b3a2",main = "Total Baltimore's Pollution - Vehicle Related")
+```
+
+### Question 6
+
+<b>Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle
+sources in Los Angeles County, California $\color{red}{\verb|fips == "06037"|}$. Which
+city has seen greater changes over time in motor vehicle emissions?</b>
+
+```{r question 6,fig.align = "center"}
+## We kept vehicle and baltimore's vehicle data from the previous Question
+data$location <- 'LA'
+data_california <- NEI[NEI$SCC %in% vehicle,] %>% filter(fips == '06037') %>% group_by(year) %>% 
+  summarise(total = sum(Emissions))
+data_california$location <- 'CA'
+data <- bind_rows(data,data_california)
+ggplot(data,aes(x = as.factor(year),y = total)) + geom_bar(stat = 'identity') + 
+  facet_grid(. ~ location) -> g
+g + theme(axis.text.x = element_text(face = "bold", angle = 90)) + xlab("Year") + 
+  ylab(expression(paste(PM[2.5],'tons from vehicles'))) + 
+  ggtitle("Total Pollution From Vehicles Per Year")
+```

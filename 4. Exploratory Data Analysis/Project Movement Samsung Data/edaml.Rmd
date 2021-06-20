@@ -1,0 +1,349 @@
+---
+title: "Clustering Example Motion Detection"
+author: "George Papadopoulos </br> pgeorgios8@gmail.com"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: darkly 
+    highlight: espresso
+    toc: true
+abstract: >
+  "Recognizing human activity is a technological breakthrough of machine learning 
+   paving the way to understanding and making the quality of the lives of people better. This 
+   brief analysis is based on Sean Kross's swirl course _Exploratory Data Analysis_."
+---
+
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = '')
+set.seed(1)
+```
+
+# Exploratory Data Analysis For Machine Learning
+
+##  A Few Words/Introduction
+
+The main goal of this brief report is to highlight the fruitful directions of research towards
+answerable questions. An aspect of research which will be made clear
+is that the "real-world" research isn't always neat and well-defined like textbook questions with 
+theoretical clear cut questions. The question we will try to answer before training a machine learning 
+model is "Is the correlation between the measurements and activities good enough to train a
+machine?" so that "Given a set of 561 measurements, would a trained machine be able to determine which 
+of the 6 activities the person was doing?"
+
+## Data
+
+The data we will use is already in a tidy format and contains 30 volunteers who performed 
+activities of daily living while carrying a waist-mounted smartphone with embedded inertial sensors. 
+Each person performed six activities while wearing a _Galaxy S II_ which were video recorded and so
+during the performance of each activity the manually written  labels address the activity of the 
+subject correctly. 
+
+## Descriptive Analysis {.tabset .tabset-pills}
+
+### Load Data
+
+```{r load data}
+ssd <- readRDS("samsung.rda")
+```
+
+### Specifications 
+
+The data table  has `r dim(ssd)[1]` rows and `r dim(ssd)[2]` columns, meaning that we have 
+7352 observations and 561 features since the last two columns store the subject id and the activity 
+of the corresponding subject.
+
+### Exploration With R
+
+```{r names/dim}
+dim(ssd)
+names(ssd)
+```
+
+### Tables Activity/Subjects
+
+```{r tables}
+table(ssd$subject)
+table(ssd$activity)
+```
+
+### Table Summation 
+
+Sum the tables of observations per subject and activity to verify that they sum up to the number of
+rows.
+
+```{r sum/rows}
+sum(table(ssd$subject))
+sum(table(ssd$activity))
+```
+
+## Exploratory Analylis Part I
+
+### Feature Plot By Index
+
+For the purpose of this section we will subset the train dataset to limit it to only subject 1,
+
+```{r subset}
+sub1 <- subset(ssd,subject == 1)
+dim(sub1)
+```
+
+we observe that the dataset with which we will work our analysis has only 347 observations. Let's 
+review the names of the first 12 features again
+
+```{r 12 first cols sub1}
+names(sub1[1:12])
+```
+
+and focus on the first three which measure the mean of the acceleration in the three dimensions.
+
+```{r plot 1,fig.align = "center"}
+par(mfrow=c(2,3), mar = c(5, 4, 1, 1),oma = c(1,1,3,1))
+plot(sub1[, 1], col = sub1$activity, ylab = names(sub1)[1])
+plot(sub1[, 2], col = sub1$activity, ylab = names(sub1)[2])
+plot(sub1[, 3], col = sub1$activity, ylab = names(sub1)[3])
+plot(sub1[,1],sub1[,2],col = sub1$activity,xlab = names(sub1)[1],ylab = names(sub1)[2])
+plot(sub1[,1],sub1[,3],col = sub1$activity,xlab = names(sub1)[1],ylab = names(sub1)[3])
+plot(sub1[,2],sub1[,3],col = sub1$activity,xlab = names(sub1)[2],ylab = names(sub1)[3])
+legend("bottomleft",legend=unique(sub1$activity),col=unique(sub1$activity), pch = 19)
+mtext("Mean Acceleration Plots By Index And Against Each Other",outer = TRUE)
+par(mfrow=c(1,1))
+```
+
+We observe that the active activities show more variability than the passive ones, especially 
+in the X dimension. 
+
+### Clustering 
+
+We still focus on the three dimensions of the _mean acceleration_ features.
+
+```{r clust 1}
+mdist <- dist(sub1[,1:3])
+hclustering <- hclust(mdist)
+```
+
+We will define a function for a more beautiful hierarchical clustering plot as a 
+dendrogram written by Eva KF Chan.
+
+```{r myplclust}
+myplclust <- function(hclust,lab = hclust$labels,lab.col = rep(1,length(hclust$labels)), 
+                       hang = 0.1,...){
+ ## modification of plclust for plotting hclust objects *in colour*!
+ ## Copyright Eva KF Chan 2009
+ ## Arguments:
+ ##    hclust:     hclust object
+ ##    lab:        a character vector of labels of the leaves of the tree
+ ##    lab.col:    color for the labels; NA=default device foreground color
+ ##    hang:       as in hclust & plclust
+ ## Side effect:
+ ##    A display of hierarchical cluster with colored leaf labels.
+ y <- rep(hclust$height,2)
+ x <- as.numeric(hclust$merge)
+ y <- y[which(x < 0)]
+ x <- x[which(x < 0)]
+ x <- abs(x)
+ y <- y[order(x)]
+ x <- x[order(x)]
+ plot(hclust,labels = FALSE,hang = hang,...)
+ text(x = x,y = y[hclust$order] - (max(hclust$height) * hang),labels = lab[hclust$order],
+       col = lab.col[hclust$order],srt = 90,adj = c(1,0.5),xpd = NA,...)}
+```
+
+We will plot the hierarchical clustering as a dendrogram, based on the distance matrix we computed,
+
+```{r cluster plot1,fig.align = "center"}
+myplclust(hclustering,lab.col = unclass(sub1$activity),xlab = "activity")
+legend("topright",legend=unique(sub1$activity),col=unique(sub1$activity),pch = 19)
+```
+
+we observe that we cannot understand much from the average acceleration since all colors seem 
+jumbled together and actually there is no sign of clustering at all, so we need to explore another 
+triplet of features which might be more useful.
+
+## Exploratory Analysis Part II
+
+### Feature Plot By Index
+
+Since we didn't figure out much from the first three features, let's pick the columns 10 through 12 
+which measure the maximum acceleration of a subject in three dimensions. As in part I let's plot the 
+maximum acceleration as stored in 10th, 11th and 12th column.
+
+```{r plot 2,fig.align = "center"}
+par(mfrow=c(2, 3), mar = c(5, 4, 1, 1),oma = c(1,1,3,1))
+plot(sub1[, 10], col = sub1$activity, ylab = names(sub1)[10])
+plot(sub1[, 11], col = sub1$activity, ylab = names(sub1)[11])
+plot(sub1[, 12], col = sub1$activity, ylab = names(sub1)[12])
+plot(sub1[,10],sub1[,11],col = sub1$activity,xlab = names(sub1)[10],ylab = names(sub1)[11])
+plot(sub1[,10],sub1[,12],col = sub1$activity,xlab = names(sub1)[10],ylab = names(sub1)[12])
+plot(sub1[,11],sub1[,12],col = sub1$activity,xlab = names(sub1)[11],ylab = names(sub1)[12])
+legend("topleft",legend=unique(sub1$activity),col=unique(sub1$activity),pch = 19)
+mtext("Max Acceleration Plots By Index And Against Each Other",outer = TRUE)
+par(mfrow=c(1,1))
+```
+
+We're seeing something vaguely interesting, passive activities mostly fall below the active ones!
+
+### Hierarchical Clustering
+
+As in part I we will create a _distance_ matrix
+
+```{r clust 2}
+mdist <- dist(sub1[,10:12])
+hclustering <- hclust(mdist)
+```
+
+and create the hierarchical clustering plot
+
+```{r cluster plot2,fig.align = "center"}
+myplclust(hclustering,lab.col = unclass(sub1$activity),xlab = "activity")
+legend("topright",legend=unique(sub1$activity),col=unique(sub1$activity),pch = 19)
+```
+
+we see clearly that the data splits into 2 clusters, active and passive activities. Moreover, the
+light blue (walking down) is clearly distinct from the other walking activities. The dark blue (walking
+level) also seems to be somewhat clustered. The passive activities, however, seem all jumbled together
+with no clear pattern visible.
+
+### Singular Value Decomposition
+
+We will try __SVD__ on the dataset sub1, the argument we will pass will be a scaled data frame with 
+the last two columns removed (subject id and activity).
+
+```{r svd}
+svd1 <- svd(scale(sub1[,-c(562,563)]))
+```
+
+The first two principal components explain 64% of the data.
+
+```{r barlot,fig.align = 'center'}
+barplot(svd1$d[1:10]^2/sum(svd1$d^2),names = mapply("paste0","PC",1:10),las = 3,col = 'red')
+```
+
+We will now plot the first two left singular vectors of svd1 which are  the first two columns of the 
+U matrix, remember that __SVD__ transformed matrix sub1 into $UDV^{T}$ and that each row in U 
+corresponds to a row in the matrix sub1.
+
+```{r plot two singular U,fig.align = "center"}
+par(mfrow = c(1,2),mar = c(1,1,1,6))
+plot(svd1$u[,1],pch = 19,col = unclass(sub1$activity))
+legend("right",inset = c(-.45,0),legend=unique(sub1$activity),
+       col=unique(sub1$activity),pch = 19,xpd = TRUE)
+plot(svd1$u[,2],pch = 19,col = unclass(sub1$activity))
+```
+
+Here we're looking at the 2 left singular vectors of svd1 (the first 2 columns of $U$). Each entry of
+the columns belongs to a particular row with one of the 6 activities assigned to it. We see the
+activities distinguished by color. Moving from left to right, the first section of rows are green
+(standing), the second red (sitting), the third black (laying), etc.  The first column of U shows
+separation of the non moving (black, red, and green) from the walking activities. The second column is
+harder to interpret. However, the magenta cluster, which represents __walking up__, 
+seems separate from the others.
+
+We'll try to figure out why that is. To do that we'll have to find which of the 500+ measurements
+(represented by the columns of sub1) contributes to the variation of that component. Since we're
+interested in sub1 columns, we'll look at the RIGHT singular vectors (the columns of V), and in
+particular, the second one since the separation of the magenta cluster stood out in the second column of
+$U$. We will plot the second principal component of V,
+
+```{r plot v 2nd,fig.align = "center"}
+plot(svd1$v[,2],col = rgb(0,0,.5,.4),pch = 19)
+```
+
+from the plot we don't see any pattern or anything else useful. In order to investigate the magenta 
+colored cluster we will find the feature which contributes most to this separation by finding the 
+maximum index of the second column of V.
+
+```{r maxCon}
+maxCon <- which.max(svd1$v[,2])
+```
+
+We will now create a distance matrix of the sub1 matrix which contains the 10th to 12th column and 
+maxCon.
+
+```{r clust 3}
+mdist <- dist(sub1[,c(10:12,maxCon)])
+```
+
+Next we will plot the hierarchical clustering dendrogram,
+
+```{r cluster plot 3,fig.align = "center"}
+hclustering <- hclust(mdist)
+myplclust(hclustering,lab.col = unclass(sub1$activity))
+legend("topright",legend=unique(sub1$activity),col=unique(sub1$activity),pch = 19)
+```
+
+and we also need to find name of this magenta clustering contributor.
+
+```{r which max name}
+names(sub1[maxCon])
+```
+
+So the mean body acceleration in the frequency domain in the Z direction is the main contributor to this
+clustering phenomenon we're seeing. Let's move on to k-means clustering to see if this technique can
+distinguish between the activities.
+
+### K-means Clustering
+
+Since the labeled activities are six we will use the _kmeans_ function with input the 
+sub1 matrix having removed the last two columns.
+
+```{r kmeans sub1}
+kClust <- kmeans(sub1[,-c(562,563)],centers = 6,nstart = 100)
+```
+
+Let's take a look at a how the activities are clustered around each center,
+
+```{r kmeans table,fig.align = "center",fig.cap = "cluster table"}
+table(kClust$cluster,sub1$activity)
+```
+
+We see that with 100 random starts, the passive activities tend to cluster together. One of the
+clusters contains only laying, but in another cluster, standing and sitting group together. We will 
+also check the dimensions of the centers,
+
+```{r dim center}
+dim(kClust$centers)
+```
+
+we see that the centers are a 6 by 561 array. Sometimes it is a good idea to look at the 
+features of these centers to see if any dominate. We will do this for the laying activity which
+as seen in the above has a size of 29.
+
+```{r laying}
+laying <- which(kClust$size == 29)
+```
+
+We will plot the first 12 features of the laying center,
+
+```{r plot laying center,fig.align = "center"}
+plot(kClust$centers[laying,1:12],pch = 19,ylab = "Laying Center",col = "orange")
+```
+
+from the plot we see the first three columns __dominate__ the laying cluster and we also need to 
+find the names of these features
+
+```{r laying dominating features}
+names(sub1[1:3])
+```
+
+so the three direction of mean body acceleration seem to have the biggest effect on lying. We will 
+do the same for the walkdown activity, 
+
+```{r walkdown center cluster index}
+walkdown <- which(kClust$size == 49)
+```
+
+we will now plot the first twelve columns of that center
+
+```{r plot walkdonw center,fig.align = "center"}
+plot(kClust$centers[walkdown,1:12],ylab = "Walkdown Center",pch = 19,col = "orange")
+```
+
+we see an interesting pattern, from left to right we are looking at the twelve accelaration 
+measurements in groups of three in which the points decrease in value. The X direction 
+dominates, then the Y and finally Z in this pattern on and on.
