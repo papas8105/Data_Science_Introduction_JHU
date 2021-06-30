@@ -1,0 +1,160 @@
+---
+title: "Singular Value Decomposition"
+author: "George Papadopoulos </br> pgeorgios8@gmail.com"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: tactile
+    highlight: github
+    math: katex
+---
+<style>
+  body {
+    text-align: justify
+    }
+</style>
+## Definition
+
+Any real $m\times n$ matrix $A$ can be decomposed uniquely as $A = UDV^{T}$ where
+
+$\bullet$ $U$ is and $m\times n$ __column orthogonal__ matrix and its vectors are _eigenvectors_ of $AA^{T}$ 
+\[AA^{T}=UDV^{T}VDU^{T}=UD^{2}U^{T}\]
+
+$\bullet$ $V$ is $n\times n$ and __column orthogonal__ matrix and its vectors are _eigenvectors_ of $A^{T}A$
+\[A^{T}A = VDU^{T}UDV^{T}=VD^{2}V^{T}\]
+
+$\bullet$ $D$ is $n\times n$ diagonal non-negative real vualues called _singular_ values, 
+$D=\text{diag}\left(\sigma_1,\sigma_2,\ldots,\sigma_n\right)$ ordered in __descending__ order.
+
+If $U = (u_1\;u_2\;u_3\;...\;u_n)$ and $V = (v_1\;v_2\;v_3\;...\;v_n)$ then $A = \sum\limits_{i=1}^{n}\sigma_{i}u_{i}v_{i}^{T}$, 
+note also that the sum goes from 1 to r where r is the $\text{rank}(A)$.
+
+_Example 1_
+
+$\displaystyle A = \left[\begin{matrix} 1 & 2 & 1\\2 & 3 & 2\\1 & 2 & 1\end{matrix}\right]$, then 
+$\displaystyle AA^{T}=A^{T}A = \left[\begin{matrix} 6 & 10 & 6 \\10 & 17 & 10\\6 &10 & 6\end{matrix}\right]$.
+The _eigenvalues_ of $AA^{T}$, $A^{T}A$ are 
+\[\left[\begin{matrix}\lambda_1 \\ \lambda_2\\\lambda_3\end{matrix}\right]=
+\left[\begin{matrix}28.86\\0.14\\0\end{matrix}\right]\]
+The eigenvectors of $AA^{T}$, $A^{T}A$ are 
+\[u_1=v_1=\left[\begin{matrix}0.454\\0.766\\0.454\end{matrix}\right],
+u_2=v_2=\left[\begin{matrix}0.542\\-0.643\\0.542\end{matrix}\right],
+u_3=v_3=\left[\begin{matrix}-0.707\\0\\-0.707\end{matrix}\right]\]
+and since the rank of A is two $A = \sum\limits_{i=1}^{2}\sqrt{\lambda_{i}}u_{i}v_{i}^{T}$. The 
+first eigenvalue compared to the second is very big, so we could approximate the matrix A with a small 
+error with $\sqrt{\lambda_{1}}u_1v_1$.
+
+## Computing the rank of SVD
+
+The rank of a matrix is equal to the number of _non zero_ singular values.
+
+## Computing the inverse of a matrix using SVD
+
+A square matrix $A$ is _non singular_ if and only if $\sigma_i\neq 0$ for all i. If $A$ 
+is a $n\times n$ _non singular_ matrix, then its inverse is given by $A^{-1} = VD_{0}^{-1}U^{T}$ 
+where  $D_{0}^{-1} = \text{diag}\left(\frac{1}{\sigma_{1}},\frac{1}{\sigma_{2}},...,\frac{1}{\sigma_{n}}\right)$.
+
+If $A$ is _singular_ or _ill-conditioned_, then we can use __SVD__ to approximate inverse 
+by the following matrix $A^{-1}=(UDV^{T})^{-1} \approx VD^{-1}U^{T}$ where 
+\[D_{0}^{-1} = \begin{cases}\frac{1}{\sigma_{i}}&\text{if } \sigma_i>t\\0 & \text{ otherwise}\end{cases}\] 
+for some small threshold $t$.
+
+## The condition of a matrix
+
+Consider the system of linear equations $Ax=b$, if small changes in $b$ can lead to 
+_relatively_ large changes in the solution $x$, then we call $A$ _ill-conditioned_. The 
+ratio $\frac{\sigma_{\text{max}}}{\sigma_{\text{min}}}$ is related to the condition of $A$ and 
+measures the degree of __singularity__ of $A$ meaning that the largest the ratio the closest 
+the matrix is to _singularity_.
+
+## Least squares of $m\times n$ systems
+
+Consider the _over-determined_ system of linear equations $Ax=b$ where $A$ is an $m\times n$
+matrix with $m>n$. The _residual_ vector for some $x$ is $r = Ax - b$ and the vector 
+$x^{*}$ which yields the smallest possible residual is called __least-squares__ solution
+\[||r||=||Ax^{*}-b||\leq ||Ax - b||,\;\forall x\in\mathbb{R}^{b}\] althought a 
+least-squares solution always exist, it __might not be unique__! The least-squares solution 
+$x$ with the smallest norm $||x||$ <u>is unique</u> and it is given by 
+\[A^{T}Ax = A^{T}b\Rightarrow x = (A^{T}A)^{-1}A^{T}b = A^{+}b \]
+.
+
+<center>Example</center>
+
+\[\left[\begin{matrix} -11 & 2\\2 & 3\\2 & -1\end{matrix}\right]
+\left[\begin{matrix}x_1\\x_2\end{matrix}\right] =
+\left[\begin{matrix}0 \\ 7 \\ 5\end{matrix}\right]\]
+
+\[x = A^{+}b=\left[\begin{matrix}-.148 & .180 & .246 \\ .164 & .189 & -.107\end{matrix}\right]
+\left[\begin{matrix}0 \\ 7 \\ 5\end{matrix}\right] =\left[\begin{matrix}2.492\\0.787\end{matrix}\right]\]
+
+## Computing $A^{+}$ using __SVD__
+
+If $A^{T}A$ is ill-conditioned or singular, we can use SVD to obtain a least squares solution 
+as follows
+\[x = A^{+}b\approx V D_{0}^{-1}U^{T}b\]
+with $D_0$ defined previously for some small threshold $t$.
+
+## Least squares solutions of $n\times n$ systems
+
+If $A$ is ill-conditioned or singular, SVD can give a workable solution in this case too
+\[x = A^{-1}b\approx VD_{0}^{-1}U^{T}b\].
+
+## Homogeneous systems
+
+Suppose that $b=0$, then the linear system is called _homogeneous_. Assume that $A$ 
+is $m\times n$ and $A = UDV^{T}$, the minimum norm solution in this case is the trivial
+solution $x = 0$. For homogeneous linear systems, the meaning of a least squares solution is 
+modified by imposing the constraint $||x||=1$ and this becomes a __constrained__ optimization 
+problem $\min\limits_{||x||=1}||Ax||$. The minimum norm solution for homogeneous systems 
+<u>is not always</u> unique.
+
+<u>__Special case:__</u> $\text{rank}(A) = n - 1$ with $m\geq n-1,\;\sigma_{n}=0$, 
+solution $x = av_n$ with $a$ a constant and $v_n$ the last column of $V$ which 
+corresponds to the smallest $\sigma$.
+
+<u>__General case:__</u> $\text{rank}(A) = n-k$ with $m\geq n -k,\;\sigma_{n-k+1}=...=\sigma_n = 0$,
+solution is $x = a_1v_{n-k} + a_2v_{n-k-1} + ...+a_kv_n$ where $a_i$ are constants with 
+$a_1^2+a_2^2+...+a_k^2 = 1$.
+
+<center>Example SVD</center>
+
+We are going to factorize a matrix in SVD form. Suppose 
+\[A = \left[\begin{matrix} 3 & 2 & 2\\2 & 3 & -2\end{matrix}\right]\] the steps 
+for the factorization are the following.
+
+1. $\det\left(AA^{T}-\lambda\right) = 0\Rightarrow \lambda_{1,2} = 25\;\text{or}\;9$, so 
+$\sigma_{1,2} = 5\;\text{or}\;3$.
+
+2. $D = \left[\begin{matrix}5 & 0 & 0\\0 & 3 & 0\end{matrix}\right]$
+
+3. Bring to upper echelon form $AA^{T} - \lambda_{1,2}\mathbb{I}$, so for 
+$\lambda_{1} = 25$ we get $\left[\begin{matrix}1 & -1 & 0\\0 & 0 & 1\\0 & 0 & 0\end{matrix}\right]$
+from which we derive the fist singular vector 
+$v_{1} = \left[\begin{matrix}\frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}}\\0\end{matrix}\right]$. Respectively
+we get the second one for $\lambda_2 = 9$ which is 
+$v_2=\left[\begin{matrix}\frac{1}{\sqrt{18}}\\-\frac{1}{\sqrt{18}}\\\frac{4}{\sqrt{18}}\end{matrix}\right]$c
+and in order to get the third one we either solve the homogeneous system $Av_3 = 0$ or find a 
+vector perpendicular to $v_1$ and $v_2$, so 
+$v_3 = \left[\begin{matrix}\frac{2}{3}\\-\frac{2}{3}\\\frac{1}{3}\end{matrix}\right]$. So the matrix
+$V^T$ is equal to 
+\[\left[\begin{matrix}\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 \\
+\frac{1}{\sqrt{18}} & -\frac{1}{\sqrt{18}} & \frac{4}{\sqrt{18}} \\
+\frac{2}{3} & - \frac{2}{3} & \frac{1}{3}
+\end{matrix}\right]\]
+
+4. In order to find $U$ we will use 
+\[U = A V D^{-1}\Rightarrow U = \left[\begin{matrix}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}\end{matrix}\right]\]
+
+5. Finally the SVD is 
+
+\[\left[\begin{matrix} 3 & 2 & 2\\2 & 3 & -2\end{matrix}\right] = 
+\left[\begin{matrix}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}\end{matrix}\right]
+\left[\begin{matrix}5 & 0 & 0\\0 & 3 & 0\end{matrix}\right]
+\left[\begin{matrix}\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 \\
+\frac{1}{\sqrt{18}} & -\frac{1}{\sqrt{18}} & \frac{4}{\sqrt{18}} \\
+\frac{2}{3} & - \frac{2}{3} & \frac{1}{3}
+\end{matrix}\right]
+.
+\]
