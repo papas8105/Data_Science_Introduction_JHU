@@ -156,5 +156,5 @@ $V^T$ is equal to
 \frac{1}{\sqrt{18}} & -\frac{1}{\sqrt{18}} & \frac{4}{\sqrt{18}} \\
 \frac{2}{3} & - \frac{2}{3} & \frac{1}{3}
 \end{matrix}\right]
-.
 \]
+.
