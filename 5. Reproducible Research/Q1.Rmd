@@ -1,0 +1,117 @@
+---
+title: "Q1"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### 1.
+
+```{r q1}
+question("Suppose I conduct a study and publish my findings. Which of the following is an example of a replication of my study?",
+  answer("I give my data to an independent investigator at another institution, she analyzes
+         the data and gets the same results as I originally obtained."),
+  answer("I take my own data, analyze it again, and publish new findings."),
+  answer("An investigator at another institution conducts a study addressing the same question,
+         collects her own data, analyzes it separately from me, and publishes her own findings.",correct = TRUE),
+  answer("An investigator at another institution conducts a study addressing a different scientific question and publishes her findings."))
+```
+
+### 2.
+
+```{r q2}
+question("Which of the following is a requirement for a published data analysis to be reproducible?",
+  answer("The data analysis is conducted using R."),
+  answer("The investigator's final publication is made available free of charge."),
+  answer("The full computer code for doing the data analysis is made publicly available.",correct = TRUE),
+  answer("The analysis is conducted on a variant of the Unix operating system."))
+```
+
+### 3.
+
+```{r q3}
+question("Which of the following is an example of a reproducible study?",
+  answer("The study's analytic data and computer code for the data analysis are publicly available.
+         When the code is run on the analytic data, the findings are identical to the published results.",correct = TRUE),
+  answer("The study's original authors re-run their computer code on their analytic data and 
+         confirm publicly that the findings match those of the published results."),
+  answer("The study's analytic data are publicly available, but the computer code is not."),
+  answer("The study's analytic data and computer code are not publicly available,
+         but the study was simple enough to be repeated by an independent investigator."))
+```
+
+### 4.
+
+```{r q4}
+question("Which of the following is a reason that a study might NOT be fully replicated?",
+  answer("The original study was conducted by a well-known investigator."),
+  answer("The original study had null findings."),
+  answer("The original study was opportunistic in its timing and it would be difficult to find a similar context in which to repeat
+         it.",correct = TRUE),
+  answer("The original study was published in a high impact journal and is considered authoritative."))
+```
+
+### 5.
+
+```{r q5}
+question("Which of the following is a reason why publishing reproducible research is increasingly important?",
+  answer("New technologies are increasing the rate of data collection, creating datasets that are more complex and extremely high
+         dimensional.",correct = TRUE),
+  answer("Computing power is limited today, making it difficult to apply sophisticated statistical methods."),
+  answer("Most studies today are small-scale and easily replicated."),
+  answer("The statistical methods for most studies can be accurately described using plain language."))
+```
+
+### 6.
+
+```{r q6}
+question("What is the role of processing code in the research pipeline?",
+  answer("It conducts the statistical analysis of the primary outcome."),
+  answer("It transforms the measured data into analytic data.",correct = TRUE),
+  answer("It transforms the analytic data into computational results."),
+  answer("It transforms the computational results into figures and tables."))
+```
+
+### 7.
+
+```{r q7}
+question("Which is a goal of literate statistical programming?",
+  answer("Require that data analysis summaries are always written in LaTeX."),
+  answer("Combine explanatory text and data analysis code in a single document.",correct = TRUE),
+  answer("Ensure that data analysis documents are always exported in PDF format."),
+  answer("Separate figures and tables from other data analytic summaries."))
+```
+
+### 8.
+
+```{r q8}
+question("What does it mean to weave a literate statistical program?",
+  answer("Transform the literate program into a human readable document.",correct = TRUE),
+  answer("Compress the literate program so that it takes up less space."),
+  answer("Transform a literate program from R to python."),
+  answer("Transform the literate program into a machine readable code file."))
+```
+
+### 9.
+
+```{r q9}
+question("Which of the following is required to implement a literate programming system?",
+  answer("A Unix-based computer system."),
+  answer("A web server for publishing documents."),
+  answer("A program that views PDF files."),
+  answer("A documentation language like LaTeX.",correct = TRUE))
+```
+
+### 10
+
+```{r q10}
+question("What is one way in which the knitr system differs from Sweave?",
+  answer("knitr was developed by Friedrich Leisch."),
+  answer("knitr allows for the use of markdown instead of LaTeX.",correct = TRUE),
+  answer("knitr is written in python instead of R."),
+  answer("knitr lacks features like caching of code chunks."))
+```

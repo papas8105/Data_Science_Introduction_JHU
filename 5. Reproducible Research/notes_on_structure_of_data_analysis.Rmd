@@ -1,0 +1,233 @@
+---
+title: "Notes On Data Structure"
+output: html_document
+---
+  <style>
+  body {
+    text-align: justify}
+</style>
+## Steps
+
+* Define the question
+* Decide what the ideal data set might be
+* Determine what data we can access
+* Obtain the data
+* Clean the data
+* Do some exploratory data analysis
+* Create a statistical model
+* Interpret the results
+* Challenge the results
+* Create a reproducible code
+
+## Example: detect spam or ham
+
+Here we will not go throught the first five steps, since we have defined a question which will use a built
+in database from the <i>kernlab</i> package.
+
+```{r package_load}
+library(kernlab)
+data(spam)
+dim(spam)
+str(spam[,1:5])
+```
+
+so we see some key words along with their frequencies with which they appear in a mail text.
+
+## Prepare the data set
+With the dim command we have seen that this data set has 4,600 observations or emails along
+with 58 different variables "key spam words". In order to create a <i>reproducible</i> 
+analysis we will set a seed (pseudorandom generator) and split the data set into two sets, the train set and the test test.
+
+```{r subsampling}
+set.seed(3435)
+trainIndicator <- rbinom(4601,size = 1 , prob = 0.5)
+table(trainIndicator)
+```
+
+So we took the random half of the data set, choosing each observation by flipping a fair coin and now we are going to split the original data.
+
+```{r split}
+trainSpam <- spam[trainIndicator == 1, ]
+testSpam  <- spam[trainIndicator == 0, ]
+```
+
+##Exploratory analysis
+Let's see some variable names from the trainSpam set
+
+```{r names}
+head(names(trainSpam),20)
+```
+
+and their respective frequencies for the first five rows.
+
+```{r 5_rows}
+print(trainSpam[1:5,1:20])
+```
+
+Let's now see the nonspam and spam frequencies.
+
+```{r s_ns}
+table(trainSpam$type)
+```
+
+We can see that in the training set there are 1381 nonspam mails and 906 spam mails. 
+We are going to examine the capitalAve variable, which is the avarage number of capitals used in
+the observations we have in our data set, since the use of capital letters is a very frequent phenomenon.
+(Use Log to scale the graph and add 1 to avoid zero inside the log)
+
+```{r capitalAve plot,fig.align='center'}
+boxplot(log10(capitalAve+1) ~ type , data = trainSpam,col = 'red')
+```
+
+From the plot it is clearly evident that there is a connection between capital letters and spam mails,
+since the box of the spam label is higher than the non spam label.
+
+Here is pair plot for the first four variables, for some we can see that there 
+exists a linear correlation and for others not. Our model here will be a simple one, meaningn that we will only use one predictor.
+
+```{r pairs,fig.align='center'}
+pairs(log10(trainSpam[,1:4]+1))
+```
+
+For a more thorough insight let's do some hclustering, the left plot is less informative 
+than the right one, since clustering is very sensitive in any skewness of any variable. (see code)
+
+```{r hclust,fig.align='center'}
+par(mfrow=c(1,2))
+hCluster <- hclust(dist(t(trainSpam[,1:57])))
+plot(hCluster,xlab = 'variables-key words')
+hClusterUpadated <- hclust(dist(t(log10(trainSpam[,1:57]+1))))
+plot(hClusterUpadated,xlab = 'variables-key words')
+```
+
+In both graphs though we see that capitalAve is one kind of cluster all by itself!
+
+## Statistical model
+We will try to fit a generalized linear model to see if we can detect a spam message.
+For this section we will exclude the two last variables which make the two right clusters in the right figure from the previous graph.
+
+<u>Logistic Regression Model</u>
+
+We are going to create a vary basic statistical model. What we're going to do is to go through 
+each of the variables in the data set and try to fit a generalized linear model, in this case a 
+logistic regression, to see if we can predict if an email is spam or not by using a single variable. (simple model)
+
+Using the __reformulate__ function to create a formula that includes the response, which is just the type of
+email and one of the variables of the data set, we're just going to cycle through all the variables in this
+data set using this _for-loop_ to build a logistic regression model, and then subsequently calculate the
+cross validated error rate of predicting spam emails from a single variable.
+
+```{r LGM, message=FALSE, warning=FALSE}
+trainSpam$numType <- as.numeric(trainSpam$type) - 1
+costFunction      <- function( x , y ){
+  sum( x != (y > 0.5))
+}
+cvError <- rep(NA,55)
+library(boot)
+for (ii in 1:55){
+  lmFormula   <- reformulate(names(trainSpam[ii]),response = 'numType')
+  glmFit      <- glm(lmFormula, family = 'binomial',data = trainSpam)
+  cvError[ii] <- cv.glm(trainSpam,glmFit,costFunction,2)$delta[2]
+}
+```
+
+having run the previous code we will find the variable with the less __cross validation__ error.
+
+```{r min cvv}
+x<-names(trainSpam[which.min(cvError)])
+print(x)
+```
+
+So it turns out that `r x` is the variable with the _minimum_ cross validated error 
+rate and this is the single predictor we will use to classify emails. In logistic
+regression we don't get specific TRUE/FALSE, 0/1 classifications of each of the messages
+but rather a probability that a message is going to be spam or not. Using a benchmark of 50%,
+if the computed probability is over 50% the email is going to be classified as __spam__.
+
+```{r classify/table,results='asis',warning=FALSE}
+#use the best model from the group
+predictionModel <- glm(numType ~ charDollar,family = 'binomial',data=trainSpam)
+#get predictions on the test set
+predictionTest  <- predict(predictionModel,testSpam)
+predictedSpam   <- rep('nonspam',dim(testSpam)[1])
+#classify as 'spam' for those with prob > 0.5
+predictedSpam[predictionModel$fitted > 0.5] <- 'spam'
+library(xtable)
+x<-xtable(table(predictedSpam,testSpam$type))
+print(x,type='html')
+```
+
+From the table above we can calculate the error rate `r (61+458)/(1346+458+61+449)`.
+
+## Interpreting results
+
+More dollar signs always mean greater probability of classifying the email as __spam__ under
+our prediction model and for our model the error rate is 22.4%.
+
+## Challenge the results
+
+Once you’ve done your analysis and you’ve developed your interpretation, it’s important that you,
+yourself, challenge all the results that you’ve found. Because if you don’t do it, someone 
+else is going to do it once they see your analysis, and so you might as well get one step ahead 
+of everyone by doing it yourself first. It’s good to challenge everything, the whole process by 
+which you’ve gone through this problem. Is the question even a valid question to ask? 
+Where did the data come from? How did you get the data? How did you process the data? How did you do the analysis and draw any
+conclusions?
+
+If you have measures of uncertainty, are those the appropriate measures of uncertainty? 
+And if you built models, why is your model the best model? Why is it an appropriate model for this problem?
+How do you choose the things to include in your model? All these things are questions 
+that you should ask yourself and should have a reasonable answer to, so that when someone else asks you, you can respond in kind.
+
+It’s also useful to think of potential alternative analyses that might be useful.
+It doesn’t mean that you have to do those
+alternative analyses, in the sense that you might stick to your original just 
+because of other reasons. But it may be useful to try alternative analyses just in case they may
+be useful in different ways or may produce better predictions.
+
+## Synthesizing results
+
+Once you’ve interpreted your results, you’ve done the analysis, you’ve interpreted your results, you’ve drawn some conclusions,
+and you’ve challenged all your findings, you’re going to need to synthesize the results and write them up.
+Synthesis is very important because typically in any data analysis, there are going to be many, 
+many, many things that you did. And when you present them to another person or to 
+a group you’re going to want to have winnowed it down to the most important aspects to tell a coherent story.
+
+Typically you want to lead with the question that you were trying to address. If people understand 
+the question then they can draw up a context in their mind, and have a better understanding of the framework in which you’re operating.
+That will lead to what kinds of data are necessary, are appropriate for this question, what kinds of analyses would
+be appropriate. You can summarize the analyses as you’re telling the story. It’s important that 
+you don’t include every analysis that you ever did, but only if its needed for telling a coherent story. 
+It’s useful to sometimes keep these analyses in your
+back pocket though, even if you don’t talk about it, because someone may challenge what
+you’ve done and it’s useful to say, “Well, you know we did do that analysis but it was
+problematic because of” whatever the reason may be. It’s usually not that useful to talk
+about the analyses that you did chronologically, or the order in which you did them, 
+because the order in which you did them is often very scattered and doesn’t make sense in retrospect. 
+Talk about the analyses of your data set in the order that’s appropriate for the story you’re trying to tell. 
+When you’re telling the story or you’re presenting to someone or
+to your group it’s useful to include very well done figures so that people can understand what you’re trying to say in one picture or two.
+
+In our example, the basic question was “Can we use quantitative characteristics of the emails to classify them as spam or ham?” 
+Our approach was rather than try to get the ideal data set from all Google servers, we collected some data from the UCI machine learning
+repository and created training and test sets from this data set. We explored some relationships between the various predictors. 
+We decided to use a logistic regression model on the training set and chose our single variable predictor by using cross validation.
+When we applied this model to the test set it was 78% accurate. The interpretation of our results was that
+basically, more dollar signs seemed to indicate an email was more likely to be spam, and this seems reasonable.
+We’ve all seen emails with lots of dollar signs in them trying to sell you something. This is both reasonable and understandable. 
+Of course, the results were not particularly great as 78% test set accuracy is not that good for most prediction algorithms.
+We probably could do much better if we included more variables or if we included a more sophisticated model,
+maybe a non-linear model. These are the kinds of things that you want to outline to people as you go through data analysis
+and present it to other people.
+
+## Reproducible Code
+
+Finally, the thing that you want to make sure of is that you document your analysis as you go. You can use things like tools like R Markdown
+and knitr and RStudio to document your analyses as you do them (more about this in later chapters). You can preserve the R code as well as any
+kind of a written summary of your analysis in a single document using knitr. And so then to make sure that all of what you do is reproducible
+by either yourself or by other people, because ultimately that’s the standard by which most big data analysis will be judged. If someone
+cannot reproduce it then the conclusions that you draw will be not as worthy as
+an analysis where the results are reproducible. So try to stay organized. Try to use the tools for reproducible research to
+keep things organized and reproducible. And that will make your evidence for your conclusions much more powerful.
+
+

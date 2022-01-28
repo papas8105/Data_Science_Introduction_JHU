@@ -1,0 +1,193 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: 'George Papadopoulos'
+output: 
+  html_document:
+    keep_md: true
+---
+  <style>
+  body {
+    text-align: justify}
+</style>
+# Introduction
+
+It is now possible to collect a large amount of data about personal movement
+using activity monitoring devices such as a [Fitbit](http://www.fitbit.com/),
+[Nike Fuelband](http://www.nike.com/us/en_us/c/nikeplus-fuelband), or [Jawbone
+Up](https://jawbone.com/up). These type of devices are part of the “quantified
+self” movement – a group of enthusiasts who take measurements about themselves
+regularly to improve their health, to find patterns in their behavior, or
+because they are tech geeks. But these data remain under-utilized both because
+the raw data are hard to obtain and there is a lack of statistical methods and
+software for processing and interpreting the data.
+
+We are going to explore data from a personal activity monitoring device. This
+device collects data at 5 minute intervals through out the day. The data
+consists of two months of data from an anonymous individual collected during
+the months of October and November, 2012 and include the number of steps taken
+in 5 minute intervals each day.
+
+## Loading And Preprocessing The Data
+
+First of all we need to download the data in our working directory, because we
+may need to modify this file many times we need to put some conditions, in
+order not to download and unzip the file beyond the first time. Note also that
+we should use the more *convenient* 'readr' package. 
+
+```{r load}
+if (!('activity.zip' %in% list.files())) {  
+  download.file('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip','activity.zip')
+  unzip('activity.zip')
+}
+if (!('d' %in% ls())) {
+  library(readr)
+  d <- read_csv('activity.csv',col_types = 'iDi')
+}
+```
+
+To be sure that the data is loaded, we type the "head" and "str" command
+
+```{r test}
+head(d)
+str(d)
+dim(d)
+```
+
+and this matches the description of the data set according to which there are
+three variables
+
+* steps: Number of steps taking in a 5-minute interval (missing values are
+coded as <font color = 'red'>NA</font>)
+* date: The date on which the measurement was taken in YYYY-MM-DD format
+* interval: Identifier for the 5-minute interval in which measurement was
+taken
+
+with 17,568 observations.
+
+## What Is The Mean Total Number Of Steps Taken Per Day?
+
+### Histogram Of Number Of Steps Per Day
+
+```{r, echo = TRUE}
+library(dplyr,warn.conflicts = FALSE)
+y <- d %>% group_by(date) %>% summarise(Steps = sum(steps))
+y
+```
+
+we see that there are dates with a <font color='red'>NA</font> indication
+which might create *bias*, but nonetheless we will create the histogram.
+
+```{r , echo = TRUE,warning=FALSE}
+library(ggplot2)
+ggplot() + geom_histogram(data = y,aes(Steps),binwidth = 5000,fill = 'green',color = 'black') + theme_bw()
+```
+
+### Mean And Median Of Steps Taken Per Day (NA EXCLUDED)
+
+```{r, echo = TRUE}
+# Mean
+mean(y$Steps,na.rm = TRUE)
+# Median
+median(y$Steps,na.rm = TRUE)
+```
+
+We see that the mean and the median are pretty close.
+
+## What Is The Average Daily Activity Pattern?
+
+### Calculate Average Steps For Each Interval For All Days
+
+With dplyr we create the following tibble.
+
+```{r}
+mean_steps_by_interval <- d %>% group_by(interval) %>% filter(!is.na(steps)) %>% select(interval,steps) %>% summarise(steps = mean(steps))
+```
+
+### Plot the Average Number steps/day By Interval
+
+```{r}
+x <- colorRampPalette(c('green','orange','violet','red'))
+ggplot(mean_steps_by_interval) + 
+  geom_line(aes(interval,steps),colour = x(288)) + 
+  labs(c("Interval","Number of Steps")) + 
+  ggtitle("Average Number of Steps per Day by Interval") + theme_bw() +
+  geom_vline(aes(xintercept = 835))
+```
+
+### Interval With Most Average Steps
+
+As shown in the figure above we expect the maximum to beF attained at the interval 835.
+
+```{r}
+mean_steps_by_interval[which.max(mean_steps_by_interval$steps),1]
+```
+
+## Imputing Missing Values
+
+Note that there are a number of days/intervals where there are missing values (coded as ). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+### Number Of Missing Observations
+
+```{r}
+sum(is.na(d$steps))
+```
+
+### Fill The NA Values In The Steps Column With The Median Value
+
+We will change the data permanently, substituting the missing observations of
+the "steps" variable with the median of the total number of steps taken each
+day we found earlier.
+
+```{r}
+m                   <- mean(d$steps,na.rm = TRUE)
+data_na_filled_mean <- d %>% mutate(steps = replace(steps,is.na(steps),m))
+data_na_filled_mean <- data_na_filled_mean %>% group_by(date) %>% summarise(Steps = sum(steps))
+m                     <- median(d$steps,na.rm = TRUE)
+data_na_filled_median <- d %>% mutate(steps = replace(steps,is.na(steps),m))
+data_na_filled_median <- data_na_filled_median %>% group_by(date) %>% summarise(Steps = sum(steps))
+```
+
+### Histogram Of The Total Number Of Steps Taken Each Day After Missing Values
+Are Imputed
+
+```{r}
+ggplot() + geom_histogram(data = data_na_filled_mean,aes(Steps),
+                          binwidth = 5000,fill = x(5)) + theme_bw()
+```
+
+We see that the impact of substituting the <font color='red'>NA</font> is
+mostly a higher bar between 10,000 and 15,000 steps. If we used the median we
+would see changes mostly in the other bars especially in the left and right
+bars.
+
+```{r}
+ggplot() + 
+  geom_histogram(data = data_na_filled_median,
+                 aes(Steps),binwidth = 5000,fill = x(5)) + theme_bw()
+```
+
+## Are There Differences In Activity Patterns Between Weekdays And Weekends?
+
+```{r, echo = TRUE}
+d$date  <- weekdays(d$date)
+## Subset Weekdays Monday To Friday
+WD <- d %>% filter(!(date %in% c("Saturday","Sunday")))
+## Create a mean
+WD <- WD %>% filter(!is.na(steps)) %>% group_by(date,interval) %>% 
+  summarise(steps = mean(steps))
+WD$factor <- rep("Weekdays",nrow(WD))
+## Do the same for the weekend as above
+SS <- d %>% filter(date %in% c('Saturday','Sunday'))
+SS <- SS %>% filter(!is.na(steps)) %>% group_by(date,interval) %>%
+  summarise(steps = mean(steps))
+SS$factor <- rep("Weekend",nrow(SS))
+d  <- bind_rows(WD,SS)
+g  <- ggplot(data = d,aes(x = interval,y = steps,colour = date)) + 
+  geom_line(lwd = 1.5)
+g  <- g + scale_color_discrete(breaks = d$date)
+g  <- g + facet_wrap(.~factor) + theme_bw() 
+g
+```
+
+The graphs do not show any significant trend differrences (ups and downs) after 500, but the peaks during weekdays are higher.
+

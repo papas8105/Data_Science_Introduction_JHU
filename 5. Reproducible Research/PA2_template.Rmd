@@ -1,0 +1,249 @@
+---
+title: 'Reproducible Research: Peer Assessment 2'
+author:
+  email: pgeorgios8@gmail.com
+  name: George Papadopoulos
+date: "29/01/2022"
+output:
+  html_document:
+    css: style.css
+    theme: united
+    toc: yes
+abstract: Storms and other severe weather events can cause both public health and
+  economic problems for communities and municipalities. Many severe events can result
+  in fatalities, injuries, and property damage, and preventing such outcomes to the
+  extent possible is a key concern.
+---
+```{r global,echo = FALSE}
+# Set the global options to remove hashes from the outputs
+knitr::opts_chunk$set(comment = '')
+```
+```{r version control}
+print(paste("This document was created with R version: ",getRversion()))
+```
+<style>
+  body {
+    text-align: justify}
+</style>
+#Synopsis
+In this report we are investigating the following questions.
+
+1. Across the United States, which types of events (as indicated in the
+<font color = 'red'>EVTYPE</font> variable) are most _harmful_ with respect to population health?
+
+2. Across the United States, which types of events have the _greatest economic_ consequences.
+
+In the following sections we are going to provide an analysis which addresses the latter questions, 
+along with a step by step reproducible guide with data processing, exploratory graphs and tables which summarize the results.
+
+#Data Processing
+
+## Getting And Loading The Data
+In this section we provide the <font color = 'blue'>R</font> code to download and clean 
+the data from the official _National Oceanic and Atmosperic Administration's_ database. 
+Much of the work conducted in the second script is not needed in this report, but it is presented in
+case it might be useful for a future use. 
+
+##Script To Get The Data
+
+```{r get and load the data,message=FALSE,cache=TRUE}
+#Running for the first time
+if(!file.exists('data.csv')){
+  download.file('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2','data.bz2')
+  #Unzip 
+  if(!require(R.utils)){install.packages('R.utils')}
+  library(R.utils,warn.conflicts = FALSE)
+  bunzip2('data.bz2','data.csv',remove = TRUE)
+}
+#Load the data
+if(!require(readr)){install.packages('readr')}
+library(readr,warn.conflicts = FALSE)
+data <- read_csv('data.csv')
+```
+
+## Cleaning The Data And Pick Variables Of Interest
+
+In the following script we choose the variables of interest and clean the data from all 
+observations which contain <font color = 'red'>NA</font> values.
+
+```{r pick variables of interest,cache = TRUE}
+if(!require(dplyr)){install.packages('dplyr')}
+suppressPackageStartupMessages(library(dplyr))
+data <- data %>% select(c("BGN_DATE", 'STATE',"EVTYPE", "FATALITIES", "INJURIES", "PROPDMG", "PROPDMGEXP", "CROPDMG", "CROPDMGEXP"))
+names(data) <- c('begindate','state','eventtype','fatalities','injuries','propertydamage',
+                 'propertydamageexpressedin','cropdamage','cropdamageexpressedin')
+# We need to get the most out of our data, regardless of the fact that in the second half of the previous century the observations 
+# were not gathered with accuracy and there are some strange symbols like '+' or '-' which we don't know what they denote and will be
+# excluded, we see all the symbols in the property and crop column which express the scale of the destructions i.e. thousand, billion,
+# hundred dollars
+unique(data$propertydamageexpressedin)
+unique(data$cropdamageexpressedin)
+# Omit rows with + - and ?
+data <- data %>% filter(!(cropdamageexpressedin  %in% c('?')))
+data <- data %>% filter(!(propertydamageexpressedin %in% c('-','+','?')))
+# 
+# Omit NAs (this will alter the data a lot and will create skewness)
+data <- data %>% na.omit()
+# Later we will focus on the last decade 
+# Express the damages in property and crops in the same unit millions
+
+# Property Damage expressed in millions
+
+# Again we get the variable which express the units
+print(unique(data$propertydamageexpressedin))
+cu <- with(data,
+           list(indexB = which(propertydamageexpressedin == 'B'),
+                indexK = which(propertydamageexpressedin == 'K'),
+                index0 = which(propertydamageexpressedin == '0'),
+                index3 = which(propertydamageexpressedin == '3'),
+                index5 = which(propertydamageexpressedin == '5')
+  )
+)
+data$propertydamage[cu$indexB] <- data$propertydamage[cu$indexB] * 1e6
+data$propertydamage[cu$indexK] <- data$propertydamage[cu$indexK] / 1e6
+data$propertydamage[cu$index0] <- data$propertydamage[cu$index0] / 1e6
+data$propertydamage[cu$index3] <- data$propertydamage[cu$index3] / 1e6
+data$propertydamage[cu$index5] <- data$propertydamage[cu$index5] / 1e6
+
+# Same process for the crops damage expressed in millions
+print(unique(data$cropdamageexpressedin))
+cu <- with(data,
+           list(indexB = which(cropdamageexpressedin   == 'B'        ),
+                indexK = which(cropdamageexpressedin  %in% c('k','K')),
+                index0 = which(cropdamageexpressedin   == '0'        )        
+  )
+)
+data$cropdamage[cu$indexB]     <- data$cropdamage[cu$indexB] * 1e6
+data$cropdamage[cu$indexK]     <- data$cropdamage[cu$indexK] / 1e6
+data$cropdamage[cu$index0]     <- data$cropdamage[cu$index0] / 1e6
+
+# Change the labels in event activity to simplify further analysis
+data$eventtype[
+  grep("precipitation|rain|hail|drizzle|wet|percip|burst|depression|fog|wall cloud",data$eventtype, ignore.case = TRUE)
+] <- "precipitation and fog"
+data$eventtype[
+  grep("wind|storm|wnd|hurricane|typhoon|saharan|dust|tstm|thunderstorm|lightning|gustnado",
+       data$eventtype,ignore.case = TRUE)
+] <- "wind and storm" #storms of any kind from dust to lightning storms
+data$eventtype[
+  grep("slide|erosion|slump|fire|smoke|volcanic",data$eventtype,ignore.case = TRUE)
+] <- "landslide erosion and volcanic activity"
+data$eventtype[
+  grep("warmth|warm|heat|dry|hot|drought|thermia|temperature record|record temperature|record high",
+       data$eventtype,ignore.case = TRUE) 
+] <- "heat and drought"
+data$eventtype[
+  grep("cold|cool|ice|icy|frost|freeze|snow|winter|wintry|wintery|blizzard|chill|freezing|avalanche|glaze|sleet",
+       data$eventtype,ignore.case = TRUE)
+] <- "ice and frost/snow"
+data$eventtype[
+  grep("flood|surf|blow-out|swells|fld|dam break",
+       data$eventtype,ignore.case = TRUE)
+] <- 'flood'
+data$eventtype[
+  grep("seas|high water|tide|tsunami|wave|current|marine|drowning|seiche",
+       data$eventtype,ignore.case = TRUE)
+] <- 'high seas'
+data$eventtype[
+  grep("tornado|spout|funnel|whirlwind",data$eventtype,ignore.case = TRUE)
+] <- 'tornado'
+suppressPackageStartupMessages(library(lubridate,warn.conflicts = FALSE))
+data$begindate <- mdy_hms(data$begindate)
+data <- arrange(data,begindate)
+```
+
+We can see that the new clean data set has `r dim(data)[1]` rows (observations) and `r dim(data)[2]` columns,
+with the number of columns being the variables we have chosen to study. All the weather phenomena were relabeled into 
+`r length(unique(data$eventtype))` categories to make our study easier. The dates of measurements span from
+`r data$begindate[1]` to `r data$begindate[279561]`, this set contains about one third of the original data
+but is complete and captures accurate observations since technology and informatics were becoming more accurate and sophisticated after 1990.
+
+
+## Tables Of Damages By Weather Phenomena Type {.tabset .tabset-fade .tabset-pills}
+### Fatalities 
+
+```{r} 
+tapply(data$fatalities,data$eventtype,sum)
+```
+
+### Injuries
+
+```{r}
+tapply(data$injuries,data$eventtype,sum)
+```
+
+### Property Damage In Million Dollars
+
+```{r} 
+options(scipen = 999)
+tapply(data$propertydamage,data$eventtype,sum)
+```
+
+### Crops Damage In Million Dollars
+
+```{r}
+options(scipen = 999)
+tapply(data$cropdamage,data$eventtype,sum)
+```
+
+####
+
+# Exploratory Analysis
+
+## Sampling And Plotting
+
+We will take a sample from our data and plot the values to see how variate they are.
+
+```{r plot by variable,fig.align = 'center',fig.cap='sample variations plot of observations by type'}
+set.seed(666)
+d <- data[sample(1000),]
+if(!require(ggplot2)){install.packages('ggplot2')}
+suppressPackageStartupMessages(library(ggplot2,warn.conflicts = FALSE))
+if(!require(cowplot)){install.packages('cowplot')}
+suppressPackageStartupMessages(library(cowplot,warn.conflicts = FALSE))
+d$eventtype <- as.factor(d$eventtype)
+g1 <- ggplot(data=data.frame(index=1:1000,f=d$fatalities,event=d$eventtype)) +
+  geom_point(aes(x=index,y=f,color=event),pch=19,cex=2,show.legend = F)  +
+    ylab("Fatalities")
+g2 <- ggplot(data=data.frame(index=1:1000,f=d$injuries,event=d$eventtype))   +
+  geom_point(aes(x=index,y=f,color=event),pch=19,cex=2,show.legend = F)  +
+    ylab("Injuries")
+g3 <- ggplot(data=data.frame(index=1:1000,f=d$propertydamage,event=d$eventtype)) +
+  geom_point(aes(x=index,y=f,color=event),pch=19,cex=2,show.legend = F)      +
+    ylab("Property Damage M$")
+g4 <- ggplot(data=data.frame(index=1:1000,f=d$cropdamage,event=d$eventtype)) +
+  geom_point(aes(x=index,y=f,color=event),pch=19,cex=2,show.legend = T)  +
+    ylab("Crops Damage M$")
+legend_p <- get_legend(g4)
+plot_grid(g1,g2,g3,g4+theme(legend.position = 'none'),legend_p,{},nrow = 3)
+```
+
+Except from the top left figure in which we see some points deviation from the benchmark of 5 deaths, 
+in the other three figures we can see a few outliers in each case which correspond to rare extreme weather circumstances.
+
+In the figure below we will visualize the cumulative damage for each category by weather type phenomenon.
+
+## Barplots For Cumulative Damage Per Type
+
+We will visualize the figures presented previously in the aggregate tables subsection.
+
+```{r histogram plot,fig.align = 'center',fig.cap = 'barplots with aggregate damage per type'}
+g5 <- ggplot(data,aes(x = eventtype,y = fatalities)) + geom_bar(stat='identity') +
+  theme(axis.text.x = element_text(angle = 45, size=8, hjust = 1, vjust = 1)) + xlab('')
+g6 <- ggplot(data,aes(x = eventtype,y = injuries)) + geom_bar(stat='identity') +
+  theme(axis.text.x = element_text(angle = 45, size=8, hjust = 1, vjust = 1)) + xlab('')
+g7 <- ggplot(data,aes(x = eventtype,y = propertydamage)) + geom_bar(stat='identity') +
+  theme(axis.text.x = element_text(angle = 45, size=8, hjust = 1, vjust = 1)) + xlab('') + ylab('property damage M$')
+g8 <- ggplot(data,aes(x = eventtype,y = cropdamage)) + geom_bar(stat='identity') +
+  theme(axis.text.x = element_text(angle = 45, size=8, hjust = 1, vjust = 1)) + xlab('') + ylab('crop damage M$')
+plot_grid(g5,g6,g7,g8,nrow = 2)
+```
+
+# Results
+
+For the first question we address, it is evident that "tornado" is the most destructive weather phenomenon in terms of fatalities and
+injuries, along with "flood" and "wind and storm" which are slightly less damaging "tornado".
+
+For the second question we address, it is evident that the most damage done with regard to property in million dollars is caused by "flood"
+and "wind and storm", for the damage in crop we see that the first destructive weather phenomenon is "wind and storm" seconded by "flood".
+</br></br><center>End Of The Report</center></br></br>
