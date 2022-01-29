@@ -124,7 +124,8 @@ mean_steps_by_interval[which.max(mean_steps_by_interval$steps),1]
 
 ## Imputing Missing Values
 
-Note that there are a number of days/intervals where there are missing values (coded as ). The presence of missing days may introduce bias into some calculations or summaries of the data.
+Note that there are a number of days/intervals where there are missing values (coded as ). 
+The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 ### Number Of Missing Observations
 
