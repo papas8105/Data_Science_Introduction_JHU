@@ -42,7 +42,6 @@ question("The definition of free software consists of four freedoms (freedoms 0 
   answer("The freedom to run the program, for any purpose."))
 ```
 
-
 ### 3.
 
 ```{r 3}
