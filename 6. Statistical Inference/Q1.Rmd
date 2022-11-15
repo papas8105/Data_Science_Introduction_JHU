@@ -30,7 +30,7 @@ contracted the virus.
 
 ## Question 2
 
-A random variable, $\mathbb{\textrm{X}}$$ is uniform, a box from 0 to 1 of height 1. 
+A random variable, $\mathbb{\textrm{X}}$ is uniform, a box from 0 to 1 of height 1. 
 (So that its density is $f(x) = 1)$ for $0\leq x \leq 1$. What is its 75th percentile?
 
 <u>answer</u>
@@ -43,8 +43,8 @@ qunif(0.75)
 
 You are playing a game with a friend where you flip a coin and if it comes up heads you give her x dollars and if it
 comes up tails she gives you y dollars. The probability that the coin is heads is p (some number between 0 and
-1). What has to be true about x and y to make so that both of your expected total earnings is 0 The game would then be
-called “fair”.
+1). What has to be true about x and y to make so that both of your expected total earnings is 0
+The game would then be called “fair”.
 
 <u>answer</u>
 
@@ -71,6 +71,8 @@ rownames(temp) <- c("X", "Prob")
 temp
 ```
 
+What is the mean?
+
 <u>answer</u>
 
 ```{r a5,comment=''}
@@ -81,7 +83,8 @@ sum(x*p)
 
 A web site (www.medicine.ox.ac.uk/bandolier/band64/b64-7.html) for home pregnancy tests cites the following: When the
 subjects using the test were women who collected and tested their own samples, the overall sensitivity was 75%.
-Specificity was also low, in the range 52% to 75%. Assume the lower value for the specificity. Suppose a subject has a
+Specificity was also low, in the range 52% to 75%. Assume the lower value for the specificity. 
+Suppose a subject has a
 positive test and that 30% of women taking pregnancy tests are actually pregnant. What number is closest to the
 probability of pregnancy given the positive test?
 
