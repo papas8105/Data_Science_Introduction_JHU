@@ -1,0 +1,160 @@
+---
+title: "Guinea Pigs' Toothgrowth Inferential Analysis Based On Two Delivery Methods"
+author:
+  email: pgeorgios8@gmail.com
+  name: George Papadopoulos
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    css: style.css
+    theme: united
+    toc: yes
+abstract: In this small report we will analyze the “tooth-growth” dataset and perform  the analysis in four steps:</br>
+    1. Load the “ToothGrowth” built-in dataset and perform some basic exploratory data analysis. (assuming that you have
+    the newest R installation > 3.4)</br>
+    2. Provide a basic summary of the data we loaded.</br>
+    3. Use confidence interval and/or hypothesis test to compare tooth growth by supp and dose.</br>
+    4. State our conclusion and the assumptions needed for our conclusions
+---
+</br>
+
+## Descriptive Analysis
+
+The "ToothGrowth" data set contains data of sixty observations recording the response of  tooth growth in 
+vitamin C intake with response to doses of 0.5, 1 and 2 mg/day of sixty guinea pigs divided into two groups 
+according to the delivery method OJ (orange juice) or VC (ascorbic acid). The data is already preloaded, for
+more information we can use the help function in R
+
+```{r help toothgrowth,comment = "",eval = FALSE}
+help("ToothGrowth")
+```
+
+the dataset has three columns, the "len" column  which is continuous and records the tooth length in millimeters, the 
+"supp" column which records a two level categorical variable with labels VC or OJ as described
+previously and finally the "dose" column which is continuous and records the doses in mg/day which are 0.5, 1 and 
+2 mg/day. 
+
+```{r structure,comment = ""}
+str(ToothGrowth)
+```
+
+The dataset has no missing values, its first thirty entries 
+are the observations recorded for the VC delivery method and the other half thirty entries the respective 
+observations for the OJ method. The first six entries of the dataset to see how the data is recorded in the 
+data frame
+
+```{r head ,comment = ""}
+head(ToothGrowth)
+```
+
+and the last six.
+
+```{r tail,comment = ""}
+tail(ToothGrowth)
+```
+
+## Exploratory Analysis
+
+We will load the "ggplot2" package and create a _boxplot_ to visualize the 
+the medians, outliers and critical quantiles. In the following plot the x axis represents
+the doses in mg/day, the y axis the tooth length and the two blocks respectively left and right correspond
+to the type of supplement.
+
+```{r exploratory analysis 1,fig.align = "center",fig.cap = "Figure 1: Tooth Length By Group"}
+library(ggplot2)
+g <- ggplot(data = ToothGrowth, aes(x = supp,y = len)) +
+        geom_boxplot(aes(fill = supp)) +
+        xlab("Supplement type") +
+        ylab("Tooth length") + 
+        ggtitle("Boxplot of tooth lenth by supplement type ") + theme_bw(base_size = 12)
+g <- g + scale_fill_discrete(name = "supplement")
+g
+```
+
+The median of tooth length of the subjects provided with orange juice is much higher than the toothgrowth length 
+of the ascorbic acid delivery method and the interquantile 75% range of the same group seems to be shorter than the VC 
+group which seems to be more variant along the tooth length axis. In the next figure we break down the performance by dose
+in each group separately which are again presented as in the previous plot, the OJ group in the left side and the VC group
+in the right side.
+
+```{r exploratory analysis 2,fig.align = "center",fig.cap = "Figure 2: Tooth Length By Dose Per Group"}
+g <- ggplot(data = ToothGrowth,aes(x = dose,fill = supp))
+g <- g + geom_boxplot(aes(y = len,group = dose))
+g <- g + facet_grid(. ~ supp) + ggtitle("ToothGrowth By Supplement")
+g <- g + theme_minimal() + xlab("dose") + ylab("tooth length") + labs(fill = "supplement")
+g
+```
+
+From a quick view it seems that the subjects provided with the supplement of orange juice respond with better results in
+tooth growth with doses 0.5 and 1 mg/day as it can be seen from the medians (black horizontal lines inside the boxes) 
+than the others provided with the ascorbic acid supplement with the same doses respectively, but both methods perform well
+for a dose of 2 mg/day although the VC seems more spread along the tooth length axis. 
+
+```{r exploratory analysis 3,fig.align = "center",fig.cap = "Figure 3: Density of Tooth Length Regardless Of Supplement"}
+g <- ggplot(data = ToothGrowth,aes(len))
+g <- g + geom_density(stat = "density",position = "identity",fill = rgb(0,0,1,.2))
+g <- g + xlim(c(-10,50)) + theme_bw() + labs(x = "length") + ggtitle("Density Of Length For The Whole Sample")
+g
+```
+
+In the next figure we plot the density of the tooth length per supplement to check the normality of 
+the tooth length data per group since we will conduct a series of t-tests in the following sections.
+
+```{r exploratory analysis 4,fig.align = "center",fig.cap = "Figure 3: Density Of Tooth Length Per Supplement"}
+g <- ggplot(data = ToothGrowth,aes(len,fill = supp,alpha = .25))
+g <- g + geom_density(stat = "density",position = "identity") + theme_bw() + guides(alpha = "none")
+g <- g + facet_grid(. ~ dose) + xlim(c(-10,50)) + scale_fill_discrete(name = "supplement")
+g
+```
+
+The OJ group tooth length distribution seems a little left skewed and the OJ respectively normal.
+
+```{r }
+g <- ggplot(data = ToothGrowth,aes(len,fill = supp))
+g <- g + geom_density(stat = "density",position = "identity")
+g <- g + facet_grid(supp ~ dose) + xlim(c(-10,50)) + theme_bw() + scale_fill_discrete(name = "supplement")
+g
+```
+
+## Statistical Inference
+
+We assume for all tests an equal variance between the groups tested and that the data was collected with 
+a design to assure that statistical power is over 70-80% for all tests especially for multiple testing which 
+is a procedure that lowers statistical _power_ __type I error inflation__.
+
+### Explore 
+
+```{r test 1,comment = ""}
+t.test(ToothGrowth$len,alternative = "greater")
+```
+
+## Mean Test
+
+```{r test 2,comment = ""}
+t.test(ToothGrowth$len[ToothGrowth$supp == "OJ"],ToothGrowth$len[ToothGrowth$supp == "VC"],
+       var.equal = TRUE,alternative = "greater",type = "two.sample",alpha = 0.05)
+```
+
+```{r test 3,comment = ""}
+boot_vec <- vector(mode = "numeric",length = 1e4)
+for (ii in 1:1e4) {
+  boot_A <- sample(ToothGrowth$len[ToothGrowth$supp == "OJ"],size = 30,replace = TRUE)
+  boot_B <- sample(ToothGrowth$len[ToothGrowth$supp == "VC"],size = 30,replace = TRUE)
+  if (median(boot_B) > median(boot_A)) {
+    boot_vec[ii] <- 1
+  }
+}
+mean(boot_vec)
+```
+
+```{r test 4,comment = ""}
+mu <- mean(ToothGrowth$len[ToothGrowth$supp == "OJ"] - ToothGrowth$len[ToothGrowth$supp == "VC"])
+perm_vec <- vector(mode = "numeric",length = 1e4)
+for (ii in 1:1e4) {
+  label_perms <- sample(ToothGrowth$supp)
+  perm_vec[ii] <- mean(ToothGrowth$len[label_perms == "OJ"] - ToothGrowth$len[label_perms == "VC"])
+}
+mean(perm_vec > mu)
+```
+
+Multiple Comparisons ...
