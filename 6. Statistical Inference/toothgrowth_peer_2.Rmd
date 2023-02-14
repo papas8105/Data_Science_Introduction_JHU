@@ -1,22 +1,27 @@
 ---
 title: "Guinea Pigs' Toothgrowth Inferential Analysis Based On Two Delivery Methods"
-author:
-  email: pgeorgios8@gmail.com
-  name: George Papadopoulos
-date: "`r Sys.Date()`"
+author: 
+    - name: George Papadopoulos 
+      email: pgeorgios8@gmail.com
+date: "`r format(Sys.time(), '%d %B %Y')`"
+header-includes:
+   - \usepackage{xltxtra}
+   - \usepackage{unicode-math}
+   - \setmathfont{Asana-Math.otf}
+   - \usepackage{bbm}
+mainfont: Ubuntu
+abstract: "In this small report we will analyze the “tooth-growth” dataset and perform  the analysis in four steps</br>
+1. Load the “ToothGrowth” built-in dataset and perform some basic exploratory data analysis.
+(assuming that you have the newest R installation > 3.4)</br>
+2. Provide a basic summary of the data we loaded.</br>
+3. Use confidence interval and/or hypothesis test to compare tooth growth by supp and dose.</br>
+4. State our conclusion and the assumptions needed for our conclusions"
 output:
   html_document:
-    css: style.css
-    theme: united
+    latex_engine: xelatex
+    highlight: haddock
     toc: yes
-abstract: In this small report we will analyze the “tooth-growth” dataset and perform  the analysis in four steps:</br>
-    1. Load the “ToothGrowth” built-in dataset and perform some basic exploratory data analysis. (assuming that you have
-    the newest R installation > 3.4)</br>
-    2. Provide a basic summary of the data we loaded.</br>
-    3. Use confidence interval and/or hypothesis test to compare tooth growth by supp and dose.</br>
-    4. State our conclusion and the assumptions needed for our conclusions
 ---
-</br>
 
 ## Descriptive Analysis
 
@@ -60,7 +65,7 @@ the medians, outliers and critical quantiles. In the following plot the x axis r
 the doses in mg/day, the y axis the tooth length and the two blocks respectively left and right correspond
 to the type of supplement.
 
-```{r exploratory analysis 1,fig.align = "center",fig.cap = "Figure 1: Tooth Length By Group"}
+```{r exp1,fig.align = "center",fig.cap = "Tooth Length By Group",fig.asp=.5}
 library(ggplot2)
 g <- ggplot(data = ToothGrowth, aes(x = supp,y = len)) +
         geom_boxplot(aes(fill = supp)) +
@@ -73,46 +78,51 @@ g
 
 The median of tooth length of the subjects provided with orange juice is much higher than the toothgrowth length 
 of the ascorbic acid delivery method and the interquantile 75% range of the same group seems to be shorter than the VC 
-group which seems to be more variant along the tooth length axis. In the next figure we break down the performance by dose
-in each group separately which are again presented as in the previous plot, the OJ group in the left side and the VC group
-in the right side.
+group which seems to be more variant along the tooth length axis. In the next figure we break down the performance by
+dose in each group separately which are again presented as in the previous plot,
+the OJ group in the left side and the VC group in the right side.
 
-```{r exploratory analysis 2,fig.align = "center",fig.cap = "Figure 2: Tooth Length By Dose Per Group"}
+```{r exp,fig.align = "center",fig.cap = "Tooth Length By Dose Per Group"}
 g <- ggplot(data = ToothGrowth,aes(x = dose,fill = supp))
 g <- g + geom_boxplot(aes(y = len,group = dose))
 g <- g + facet_grid(. ~ supp) + ggtitle("ToothGrowth By Supplement")
-g <- g + theme_minimal() + xlab("dose") + ylab("tooth length") + labs(fill = "supplement")
+g <- g + theme_minimal() 
+g <- g + xlab("dose") + ylab("tooth length") + labs(fill = "supplement")
 g
 ```
 
-From a quick view it seems that the subjects provided with the supplement of orange juice respond with better results in
-tooth growth with doses 0.5 and 1 mg/day as it can be seen from the medians (black horizontal lines inside the boxes) 
-than the others provided with the ascorbic acid supplement with the same doses respectively, but both methods perform well
-for a dose of 2 mg/day although the VC seems more spread along the tooth length axis. 
+From a quick view it seems that the subjects provided with the supplement of orange juice respond with better results 
+in tooth growth with doses 0.5 and 1 mg/day as it can be seen from the medians (black horizontal lines inside the 
+boxes) than the others provided with the ascorbic acid supplement with the same doses respectively, but both methods 
+perform well for a dose of 2 mg/day although the VC seems more spread along the tooth length axis. 
 
-```{r exploratory analysis 3,fig.align = "center",fig.cap = "Figure 3: Density of Tooth Length Regardless Of Supplement"}
+```{r exp3,fig.align = "center",fig.pos="htb",fig.cap = "Density of Tooth Length Regardless Of Supplement",fig.asp=.5}
 g <- ggplot(data = ToothGrowth,aes(len))
 g <- g + geom_density(stat = "density",position = "identity",fill = rgb(0,0,1,.2))
-g <- g + xlim(c(-10,50)) + theme_bw() + labs(x = "length") + ggtitle("Density Of Length For The Whole Sample")
+g <- g + xlim(c(-10,50)) + theme_bw() + labs(x = "length") 
+g <- g + ggtitle("Density Of Length For The Whole Sample")
 g
 ```
 
 In the next figure we plot the density of the tooth length per supplement to check the normality of 
 the tooth length data per group since we will conduct a series of t-tests in the following sections.
 
-```{r exploratory analysis 4,fig.align = "center",fig.cap = "Figure 3: Density Of Tooth Length Per Supplement"}
+```{r exp4,fig.align = "center",fig.cap = "Density Of Tooth Length Per Supplement",fig.asp=.35,fig.pos="htb"}
 g <- ggplot(data = ToothGrowth,aes(len,fill = supp,alpha = .25))
-g <- g + geom_density(stat = "density",position = "identity") + theme_bw() + guides(alpha = "none")
-g <- g + facet_grid(. ~ dose) + xlim(c(-10,50)) + scale_fill_discrete(name = "supplement")
+g <- g + geom_density(stat = "density",position = "identity") + theme_bw() 
+g <- g + guides(alpha = "none")
+g <- g + facet_grid(. ~ dose) + xlim(c(-10,50)) 
+g <- g + scale_fill_discrete(name = "supplement")
 g
 ```
 
 The OJ group tooth length distribution seems a little left skewed and the OJ respectively normal.
 
-```{r }
+```{r ,fig.asp=.35}
 g <- ggplot(data = ToothGrowth,aes(len,fill = supp))
 g <- g + geom_density(stat = "density",position = "identity")
-g <- g + facet_grid(supp ~ dose) + xlim(c(-10,50)) + theme_bw() + scale_fill_discrete(name = "supplement")
+g <- g + facet_grid(supp ~ dose) + xlim(c(-10,50)) + theme_bw() 
+g <- g + scale_fill_discrete(name = "supplement")
 g
 ```
 
@@ -147,14 +157,21 @@ for (ii in 1:1e4) {
 mean(boot_vec)
 ```
 
+
 ```{r test 4,comment = ""}
-mu <- mean(ToothGrowth$len[ToothGrowth$supp == "OJ"] - ToothGrowth$len[ToothGrowth$supp == "VC"])
+me <- median(ToothGrowth$len[ToothGrowth$supp == "OJ"] - ToothGrowth$len[ToothGrowth$supp == "VC"])
 perm_vec <- vector(mode = "numeric",length = 1e4)
 for (ii in 1:1e4) {
   label_perms <- sample(ToothGrowth$supp)
   perm_vec[ii] <- mean(ToothGrowth$len[label_perms == "OJ"] - ToothGrowth$len[label_perms == "VC"])
 }
-mean(perm_vec > mu)
+mean(me < perm_vec)
+
+dx <- density(perm_vec)
+plot(dx, lwd = 2, main = "Density", col = "red")
+
+polygon(c(dx$x[dx$x <= qnorm(.05,sd = sd(perm_vec))], 0), c(dx$y[dx$x <= qnorm(0.05,sd = sd(perm_vec))], qnorm(.05,sd=sd(perm_vec))),
+        col = rgb(1, 0, 0, alpha = 0.5), border = "red", main = "",ylim = c(0,02))
 ```
 
 Multiple Comparisons ...

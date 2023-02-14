@@ -1,44 +1,93 @@
 ---
-title: "The Exponential Distribution And The CLT"
-author:
-  email: pgeorgios8@gmail.com
-  name: George Papadopoulos
-date: "`r Sys.Date()`"
+title: The Exponential Distribution And The CLT
+author: 
+    - George Papadopoulos 
+    - pgeorgios8@gmail.com
+date: "`r format(Sys.time(), '%d %B %Y')`"
+header-includes:
+   - \usepackage{xltxtra}
+   - \usepackage{unicode-math}
+   - \setmathfont{Asana-Math.otf}
+   - \usepackage{bbm}
+mainfont: Ubuntu
 output:
-  html_document:
-    css: style.css
-    theme: united
-    toc: yes
-abstract: In this small report we will investigate the process of sampling from a population which follows an exponential distribution
-  with parameter $\lambda$, compare the estimations of the mean, variance and standard deviation that can be computed from the
-  samples with the theoretical properties of the distribution and how this process can be connected to the central limit theorem.
-  We will create one thousand samples of forty observations from an exponential distribution with $\lambda = 0.2$ and will create a
-  simulation in R to answer three questions,</br>
-    1. Show where the distribution of the samples’ means is centered at and compare it to the theoretical center of the distribution.</br>
-    2. Show how variable it is and compare it to the theoretical variance of the distribution.</br>
-    3. Show that the samples’ means distribution is approximately normal.
+  pdf_document:
+    latex_engine: xelatex
+    highlight: haddock
 ---
+
 ```{r global,echo = FALSE}
 # Set the global options to remove hashes from the outputs
 knitr::opts_chunk$set(comment = '')
 options(scipen = 999)
 ```
+# \textcolor{red}{abstract}
+  In this small report we will investigate the process of sampling from a
+  population which follows an exponential distribution with parameter $\lambda$, compare
+  the estimations of the mean, variance and standard deviation that can be computed
+  from the samples with the theoretical properties of the distribution and how this
+  process can be connected to __the central limit theorem__. We will create one thousand
+  samples of forty observations from an exponential distribution with $\lambda = 0.2$
+  and will create a simulation in R to answer three questions,
+  
+  1. Show where the distribution of the samples’ means is centered at and compare it to the theoretical
+  center of the distribution.
+  
+  2. Show how variable it is and compare it to the theoretical variance of the distribution.
+  
+  3. Show that the samples’ means distribution is approximately normal.</br>
+  
+----
+</br> The *exponential* distribution with parameter $\lambda$ has support in $[0,+\infty]$ with probability density
+function $$f(x;\lambda) = \begin{cases}\lambda \mathbb{e}^{-\lambda x}&,x\geq 0\\0&,\text{otherwise}\end{cases}$$ its
+mean is $\lambda^{-1}$ and its variance $\lambda^{-2}$. The *exponential* distribution or *negative exponential*
+distribution is the probability distribution that models the time between the events in a *Poisson* process, 
+a process in which events occur **continuously** and **independently** at a *constant* average rate.
 
-</br>
-The _exponential_ distribution with parameter $\lambda$ has support in $[0,+\infty]$ with probability density function 
-\[f(x;\lambda) = \begin{cases}\lambda \mathbb{e}^{-\lambda x}&,x\geq 0\\0&,\text{otherwise}\end{cases}\]
-its mean is $\lambda^{-1}$ and its variance $\lambda^{-2}$. The _exponential_ distribution or _negative exponential_ distribution 
-is the probability distribution that models the time between the events in a _Poisson_ process, a process in which events occur
-__continuously__ and __independently__ at a _constant_ average rate.
+```{r exp plot,fig.align = "center"}
+library(ggplot2)
+library(RColorBrewer)
+x_lower <- 0
+x_upper <- 5
+max_height2 <- max(
+  dexp(x_lower:x_upper, rate = 0.1,log = FALSE),
+  dexp(x_lower:x_upper, rate = 0.2,log = FALSE),
+  dexp(x_lower:x_upper, rate = 0.5,log = FALSE),
+  dexp(x_lower:x_upper,rate = 1,log = FALSE),
+  dexp(x_lower:x_upper,rate = 2,log = FALSE),
+  dexp(x_lower:x_upper,rate = 3,log = FALSE),
+  dexp(x_lower:x_upper,rate = 3.5,log = FALSE),
+  dexp(x_lower:x_upper,rate = 3.75,log = FALSE),
+  dexp(x_lower:x_upper, rate = 4, log = FALSE)
+  )
+ggplot(data.frame(x = c(x_lower, x_upper)), aes(x = x)) + xlim(x_lower, x_upper) + 
+     ylim(0, max_height2) +
+  stat_function(fun = dexp, args = list(rate = 0.1), aes(colour = "0.1"))   +
+  stat_function(fun = dexp, args = list(rate = 0.2), aes(colour = "0.2"))   +
+  stat_function(fun = dexp, args = list(rate = 0.5), aes(colour = "0.5"))   + 
+  stat_function(fun = dexp, args = list(rate = 1), aes(colour = "1"))       + 
+  stat_function(fun = dexp, args = list(rate = 2), aes(colour = "2"))       + 
+  stat_function(fun = dexp, args = list(rate = 3), aes(colour = "3"))       + 
+  stat_function(fun = dexp, args = list(rate = 3.5),aes(colour = "3.5"))    +
+  stat_function(fun = dexp, args = list(rate = 3.75), aes(colour = "3.75")) +
+  stat_function(fun = dexp, args = list(rate = 4), aes(colour = "4"))       +
+  scale_color_manual("Rate", values =brewer.pal(9,"Blues"))  +
+  labs(x = "\n x", y = "f(x) \n", 
+        title = "Exponential Distribution Density Plots \n") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(face="bold", size = 10),
+        legend.position = "right") + 
+  theme_bw()
+```
 
-After the brief introduction of the _exponential_ distribution we are ready to start the simulation in R.
+After the brief introduction to the *exponential* distribution, we are ready to start the simulation in R. 
 We assign the parameter $\lambda$ to the value $0.2$, the parameter "nosim" to the vector with increasing 
 integers from $1$ to $1000$ (index of each sample) and finally we will create a data frame with the index
-of each sample in the first column and the mean of the sample with index $i$ in the second column next to
-the respective index. In the following script the command __rexp__ generates in our case forty thousand
-observations from an _exponentially_ distributed population with rate $\lambda = 0.2$. With the command
-__matrix__ the program rearranges the random values into a $1000\times 40$ matrix and finally with the
-command __data.frame__ we gather the samples' indexes and mean of each sample into a single frame of values.
+of each sample in the first column and the mean of the respective sample in the second column.
+In the following script the command **rexp** generates in our case forty thousand
+observations from an *exponentially* distributed population with rate $\lambda = 0.2$. With the 
+command **matrix** the program rearranges the random values into a $1000\times 40$ matrix and finally with 
+the command **data.frame** we gather the samples' indexes and means of each sample into a single frame of values.
 
 ```{r script1}
 #insert lambda and number of observations
@@ -52,76 +101,76 @@ samples <- matrix(rexp(n*1000,lambda),1000,40)
 means <- data.frame(x = nosim,y = apply(samples,1,mean))
 ```
 
-If you want to reproduce the process on your own you can type the commands presented above in a new 
-terminal of a new session in R, but of course you should expect different values since the pseudo-random
-number generator of R creates different sets each time you insert the commands in a new session. 
-In the next three sections you will have to have in mind for the generalized cases that "population's mean"
-is an abbreviation of the mean of the variable of interest of the population we are tying to estimate and
-that "population's variance or standard deviation" should be interpreted accordingly and finally we expect
-that our results from the experimentation via simulations should be _consistent_ with the population's distribution parameters.  
+If you want to reproduce the process on your own you can type the commands presented above in a new terminal of a new
+session in R, but of course you should expect different values since the pseudo-random number generator of R creates
+different sets each time you insert the commands in a new session. We expect that our results from the 
+experimentation via the simulations should be *consistent* with the population's distribution parameters, meaning that 
+each sample's mean is an _unbiased_ estimator of the mean of the population and that the same holds for 
+the $S^2$ of each sample which estimates the population's variance $\sigma^2$.
 
-[1] We know that the mean of the sample's mean is an _unbiased estimator_ of the population's mean, so since we have stored the
-mean values of our one thousand samples in the second column of the means variable, by typing
+[1] We know that the mean of the sample's mean is an *unbiased estimator* of the population's mean, so since
+we have stored the mean values of our one thousand samples in the second column of the means variable, by typing
 
 ```{r script2}
 mean(means[,2])
 ```
 
-we get the mean of the samples' means and conclude that the population's mean _unbiased estimator_ is 
+we get the mean of the samples' means and conclude that the population's mean *unbiased estimator* is 
 `r mean(means[,2])`, which is very close to the distribution's theoretical mean $\frac{1}{\lambda}=\frac{1}{0.2} = 5$.
 
-[2] We know that the _unbiased_ variance estimation for a sample mean is derived from the formula 
-\[S^2 = \frac{\sum\limits_{i = 1}^{n}\left(\mathbb{X}_{i}-\overline{\mathbb{X}}\right)^2}{n-1}\]
-we will use this formula in R to create a vector for all the one thousand _unbiased_ variances of each sample's mean and then
-divide their sum by the number of samples to get the _unbiased_ variance estimate of the population's variance. Before we
-continue we need to understand why we use the $n-1$ degrees of freedom in the denominator of the _estimator_. 
-Given that we computed the sample mean,
-if we wanted to compute $S^2$ which is the second information we would like to investigate, we are left
-with $n−1$ degrees of freedom and this happens because if we were to randomly choose
-$n-1$ of the sample observations out of $n$, the last one is always biased, since we can find its
-value by subtracting the sum of the $n-1$ observations from the sample mean we computed in the
-first step and that leaves us with $n-1$ unbiased observations in the second step of our sample investigation.
+[2] We know that the *unbiased* variance estimation from a sample is derived by the formula $$S^2 = 
+\frac{\sum\limits_{i = 1}^{n}\left(\mathbb{X}_{i}-\overline{\mathbb{X}}\right)^2}{n-1}$$ where $\overline{\mathbb{X}}$
+is the sample's mean $\mathbb{X}_{i}$ the sample's observations and $n$ the number of the observations in each sample, 
+we will use this formula in R to create a vector with 1000 entries with the *unbiased* estimations 
+of variance from each sample and then divide their sum by the number of samples to get the *unbiased estimation* variance 
+estimate of the population's variance. Before we continue, we need to understand why we use the $n-1$ degrees of freedom 
+in the denominator of the *estimator*. Given that we computed the sample mean, if we wanted to compute $S^2$ which is the 
+second information we would like to obtain from the sample, we are left with $n−1$ degrees of freedom and this happens 
+because if we were to randomly choose $n-1$ of the sample observations out of $n$, the last one is always biased since we
+can find its value by subtracting the sum of the $n-1$ observations from the sample mean we computed in the first step.
 
 ```{r script3}
 v <- sum(apply(samples,1,function(x){sum(x-mean(means[,2]))^2/(n-1)}))/1000
 sqrt(v)
 ```
 
-So we came up with a variance _estimator_ of `r v` and a standard deviation of `r sqrt(v)`, which 
-as expected are very close to the theoretical values they are estimating 
-$\sigma^2=\frac{1}{\lambda^2}=25$ and $\sigma =\frac{1}{\lambda}=\frac{1}{0.2} = 5$ respectively, 
-with a small computation error due to noise.
+So we came up with a variance *estimator* of `r v` and a standard deviation of `r sqrt(v)`, 
+which as expected are very close to the theoretical values they are estimating 
+$\sigma^2=\frac{1}{\lambda^2}=25$ and $\sigma =\frac{1}{\lambda}=\frac{1}{0.2} = 5$ 
+respectively, with a small difference between the experimental and the theoretical value.
 
-[3] Briefly the _central limit theorem_ (CLT) sates that if we sample from a population in order to 
-estimate a parameter of interest, even if we don't know anything about the population's distribution,
-for a large number of observations for each sample and a large number of sampling repetitions, 
-the distribution of the samples' means follows a standard normal distribution with mean the mean
-of the samples' means and standard deviation equal to the _estimation_ of the standard deviation 
-divided by the square root of the samples' size, which is known as the _standard error_.
-To see that in action the following code creates a plot with the histogram of the one 
-thousand means we sampled in the beginning and the normal distribution centered at the 
-`r mean(means[,2])` and standard deviation equal to `r sqrt(v)`.
+[3] Briefly the *central limit theorem* (CLT) sates that if we sample from a population in order to estimate a
+parameter of interest with non infinite variance, even if we don't know anything about the population's distribution and 
+if that population isn't normally distributed,
+for a large number of observations for each sample and a large number of sampling repetitions, the distribution of the 
+standardized samples' means follows a standard normal distribution. To see that in action the following code creates a 
+plot with the histogram of the one thousand means we sampled in the beginning and the normal distribution centered at 
+0 with a standard deviation equal to $\frac{1}{\lambda} = 5$ since the samples are drawn from an exponential
+distribution with $\lambda = 0.2$.
 
 ```{r script4,fig.align = "center"}
-library(ggplot2)
-g <- {}
-g <- ggplot(data = data.frame(x = means[,2]),aes(x = x))
+g <- ggplot(data = data.frame(x = (means[,2] - 5)/(5/sqrt(40))),aes(x = x))
 g <- g + geom_histogram(aes(y = after_stat(density)),colour = "black",fill = "red",
                         binwidth = diff(range(means[,2]))/40)
-g <- g + stat_function(fun = dnorm,args = list(
-  mean = mean(means[,2]),sd = sqrt(v)/sqrt(40)),color = "green",linewidth = 1.2)
-g <- g + geom_vline(xintercept = mean(means[,2]),linewidth = 1.2) + theme_bw() + 
-  labs(title = "Histogram of sample means compared to the standard normal")
+g <- g + stat_function(fun = dnorm,args = list(mean = 0,sd = 1),color = "green",linewidth = 1.5)
+g <- g + geom_vline(xintercept = 0,linewidth = 1.2) + 
+  theme(axis.line = element_line(colour = "grey", 
+                      linewidth = 1.5, linetype = "solid"),panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        axis.text.x = element_text(color = "green",angle = -70)) + 
+  labs(title = paste("Histogram of sample means compared to the standard normal N(0,1)")) 
+g <- g + xlab("standard normal quantiles") + scale_x_continuous(
+  breaks=c(qnorm(.01),qnorm(.05),
+           qnorm(.32),qnorm(.68),
+           qnorm(.95),qnorm(.99)),
+        label=c("1%","5%","32%","68%","95%","99%"))
 g
 ```
 
-If we used bigger sample size i.e. 100 and gathered more samples i.e. 2000, what we would expect 
-to see if we created the sample plot is a histogram bounded by the green line perfectly and of 
-course this complies with the CLT 
-\[\overline{\mathbb{X}_{i}}\sim\mathcal{N}\left(\mu,\frac{\sigma}{\sqrt{n}}\right)\]
-where $n$ is the sample size, $\overline{\mathbb{X}_i}$ is each sample's mean with index i,
-\[\mu = \frac{1}{\text{number of samples}}\times \sum_{i=1}^{\text{number of samples}}\frac{\overline{\mathbb{X}}_i}{n}\]
-and 
-\[\sigma = \sqrt{\frac{1}{\text{number of samples}}\times \sum_{i=1}^{\text{number of samples}}\frac{\left(\overline{\mathbb{X}_i}-\mu\right)^2}{n-1}}\]
-and having plotted an image of how the sample means' distribution is approximated by the standard normal 
-distribution, our mini report is completed.
+If we used a bigger sample size i.e. 100 and gathered more samples i.e. 2000, what we would expect to see if we created
+the sample plot is a histogram bounded by the green line perfectly and  this complies with the CLT
+$$\sqrt{n}\frac{\overline{\mathbb{X}_{i}} - \mu}{\sigma}\sim\mathcal{N}(0,1)$$ where $n$ is the sample size,
+$\overline{\mathbb{X}_i}$ is each sample's mean with index i, $$\mu = \frac{1}{\text{number of samples}}\times
+\sum_{i=1}^{\text{number of samples}}\frac{\overline{\mathbb{X}}_i}{n}$$ and $$\sigma = \sqrt{\frac{1}{\text{number of 
+samples}}\times \sum_{i=1}^{\text{number of samples}}\frac{\left(\overline{\mathbb{X}_i}-\mu\right)^2}{n-1}}$$ and this
+concludes the report.

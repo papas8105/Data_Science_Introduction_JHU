@@ -1,8 +1,8 @@
 ## mywald function used to depict coverage of binomial trials using the p_hat 
-## of the sample instead of for the computation of the sd for the construction 
+## of the sample instead of p for the computation of the sd for the construction 
 ## of confidence intervals
 
-mywald <- function(nosim = 1000,n = 20,aggresti_coull = FALSE) {
+mywald_norm <- function(nosim = 1000,n = 20,aggresti_coull = FALSE) {
     pvals <- seq(0.05,0.95,by = 0.05)
     ifelse(aggresti_coull == FALSE,0,2) -> x
     coverage <-sapply(pvals,function(p) {
@@ -20,6 +20,7 @@ mywald <- function(nosim = 1000,n = 20,aggresti_coull = FALSE) {
 }
 
 ## c.i. for poisson, parameter input --> time period of measurement of occurrence of events
+
 coverage_poisson <- function(t = 94.32,min_l = 0.005,max_l = 0.1,step = 0.01,nosim = 1000) {
     lambdas <- seq(min_l,max_l,by = step)
     coverage <- sapply(lambdas,function(lambda) {

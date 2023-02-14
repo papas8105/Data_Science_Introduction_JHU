@@ -77,6 +77,13 @@ p-value for the relevant test of whether the hospital is *below* the standard?
 ppois(10,lambda = 0.01 * 1787)
 ```
 
+<u>Not needed for the exercise:</u> For small p and large n let us test if the binomial distribution
+is approximated by the poisson distribution.
+
+```{r a-test,comment = ''}
+pbinom(10,1787,.01)
+```
+
 ## Question 5
 
 Suppose that 18 obese subjects were randomized, 9 each, to a new diet pill and a placebo. Subjects’
@@ -91,8 +98,8 @@ the underlying data and a common population variance, give a p-value for a two s
 
 ```{r a5,comment = ''}
 n1 <- n2 <- 9
-x1 <- -3 ##treated
-x2 <- 1  ##placebo
+x1 <- -3  ##treated
+x2 <- 1   ##placebo
 s1 <- 1.5 ##treated
 s2 <- 1.8 ##placebo
 s <- sqrt(((n1 - 1) * s1^2 + (n2 - 1) * s2^2)/(n1 + n2 - 2))
@@ -132,9 +139,14 @@ one sided test versus a null hypothesis of no volume loss?
 \]
 
 ```{r a7,comment = ''}
-pnorm(1.645 * 0.004, mean = 0.01, sd = 0.004, lower.tail = FALSE)
+pnorm(qnorm(.95) * 0.004, mean = 0.01, sd = 0.004, lower.tail = FALSE)
 ```
 
+OR
+
+```{r a8-alt,comment = ''}
+pnorm(qnorm(.95) - 0.01/(.04/sqrt(100)),lower.tail = FALSE)
+```
 
 ## Question 8
 
@@ -162,7 +174,7 @@ ceiling((4 * (qnorm(0.95) - qnorm(0.1)))^2)
 
 ## Question 9
 
-As you increase the type one error rate, $\alpha$, what happens to power?
+As you increase the type-Ι error rate $\alpha$, what happens to power?
 
 <u>answer</u>
 
