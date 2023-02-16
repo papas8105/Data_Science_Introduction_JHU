@@ -1,5 +1,9 @@
 ## mywald function used to depict coverage of binomial trials using the p_hat 
+<<<<<<< Updated upstream
 ## of the sample instead of p for the computation of the sd for the construction 
+=======
+## instead of population's p for the computation of the sd for the construction 
+>>>>>>> Stashed changes
 ## of confidence intervals
 
 mywald_norm <- function(nosim = 1000,n = 20,aggresti_coull = FALSE) {
