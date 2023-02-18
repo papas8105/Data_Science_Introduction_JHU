@@ -9,7 +9,7 @@ header-includes:
    - \usepackage{unicode-math}
    - \setmathfont{Asana-Math.otf}
    - \usepackage{bbm}
-mainfont: Ubuntu
+mainfont: Georgia
 output:
   pdf_document:
     latex_engine: xelatex

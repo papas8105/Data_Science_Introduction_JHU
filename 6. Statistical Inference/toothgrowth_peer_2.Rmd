@@ -1,6 +1,5 @@
 ---
 title: "Guinea Pigs' Toothgrowth Inferential Analysis Based On Two Delivery Methods"
-<<<<<<< Updated upstream
 author: 
     - name: George Papadopoulos 
       email: pgeorgios8@gmail.com
@@ -23,26 +22,6 @@ output:
     highlight: haddock
     toc: yes
 ---
-=======
-author:
-  email: pgeorgios8@gmail.com
-  name: George Papadopoulos
-date: "`r Sys.Date()`"
-output:
-  html_document:
-    css: style.css
-    theme: united
-    toc: yes
-abstract: In this small report we will analyze the “tooth-growth” dataset and perform  the analysis in four steps:</br>
-    1. Load the “ToothGrowth” built-in dataset and perform some basic exploratory data analysis. (assuming that you have
-    the newest R installation > 3.4)</br>
-    2. Provide a basic summary of the data we loaded.</br>
-    3. Use confidence interval and/or hypothesis test to compare tooth growth by supp and dose.</br>
-    4. State our conclusion and the assumptions needed for our conclusions
----
-</br>
->>>>>>> Stashed changes
-
 ## Descriptive Analysis
 
 The "ToothGrowth" data set contains data of sixty observations recording the response of  tooth growth in 
@@ -85,11 +64,7 @@ the medians, outliers and critical quantiles. In the following plot the x axis r
 the doses in mg/day, the y axis the tooth length and the two blocks respectively left and right correspond
 to the type of supplement.
 
-<<<<<<< Updated upstream
-```{r exp1,fig.align = "center",fig.cap = "Tooth Length By Group",fig.asp=.5}
-=======
 ```{r exploratory analysis 1,fig.align = "center",fig.cap = "Figure 1: Tooth Length By Group"}
->>>>>>> Stashed changes
 library(ggplot2)
 g <- ggplot(data = ToothGrowth, aes(x = supp,y = len)) +
         geom_boxplot(aes(fill = supp)) +
@@ -102,7 +77,6 @@ g
 
 The median of tooth length of the subjects provided with orange juice is much higher than the toothgrowth length 
 of the ascorbic acid delivery method and the interquantile 75% range of the same group seems to be shorter than the VC 
-<<<<<<< Updated upstream
 group which seems to be more variant along the tooth length axis. In the next figure we break down the performance by
 dose in each group separately which are again presented as in the previous plot,
 the OJ group in the left side and the VC group in the right side.
@@ -126,7 +100,8 @@ g <- ggplot(data = ToothGrowth,aes(len))
 g <- g + geom_density(stat = "density",position = "identity",fill = rgb(0,0,1,.2))
 g <- g + xlim(c(-10,50)) + theme_bw() + labs(x = "length") 
 g <- g + ggtitle("Density Of Length For The Whole Sample")
-=======
+g
+```
 group which seems to be more variant along the tooth length axis. In the next figure we break down the performance by dose
 in each group separately which are again presented as in the previous plot, the OJ group in the left side and the VC group
 in the right side.
@@ -148,7 +123,6 @@ for a dose of 2 mg/day although the VC seems more spread along the tooth length 
 g <- ggplot(data = ToothGrowth,aes(len))
 g <- g + geom_density(stat = "density",position = "identity",fill = rgb(0,0,1,.2))
 g <- g + xlim(c(-10,50)) + theme_bw() + labs(x = "length") + ggtitle("Density Of Length For The Whole Sample")
->>>>>>> Stashed changes
 g
 ```
 
@@ -240,7 +214,18 @@ polygon(c(dx$x[dx$x <= qnorm(.05,sd = sd(perm_vec))], 0), c(dx$y[dx$x <= qnorm(0
 Multiple Comparisons ...
 =======
 ```{r test 4,comment = ""}
-
+teststat <- function(groups = c("A","B"),permute = FALSE) {
+    if (isTRUE(permute)) {
+        count  <- InsectSprays$count[InsectSprays$spray %in% groups]
+        label  <- c(rep(groups[1],length(which(InsectSprays$spray == groups[1]))),
+                    rep(groups[2],length(which(InsectSprays$spray == groups[2]))))
+        perms  <- sample(label)
+        return(mean(count[perms == groups[2]]) - mean(count[perms == groups[1]]))
+    }
+    mean(
+     InsectSprays$count[InsectSprays$spray == groups[2]] - InsectSprays$count[InsectSprays$spray == groups[1]]
+        )
+}
 ```
 
 >>>>>>> Stashed changes
