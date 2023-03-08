@@ -1,0 +1,111 @@
+---
+title: "Quiz 1"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+<style>body{text-align: justify}</style>
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE,comment = "")
+```
+
+### Question 1
+
+```{r q1}
+question("The American Community Survey distributes downloadable data about United States communities. 
+         Download the 2006 microdata survey about housing for the state of Idaho using download.file() from here:</br>
+         https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv</br>
+         and load the data into R. The code book, describing the variable names is
+         here:</br>https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf </br>
+         How many properties are worth $1,000,000 or more?",
+         answer("53",correct = TRUE),
+         answer("31"),answer("24"),answer("2076"))
+```
+
+```{r ans1,exercise = TRUE}
+
+
+```
+
+```{r ans1-solution}
+data <- read.csv("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv")
+length(data$VAL[data$VAL >= 24 & !is.na(data$VAL)])
+## alternative 
+library(dplyr)
+data %>% filter(VAL >= 24,!is.na(VAL)) %>% select(VAL) %>% unlist %>% length
+```
+
+### Question 2
+
+```{r q2}
+question("Use the data you loaded from Question 1. Consider the variable FES in the code book. 
+         Which of the 'tidy data' principles does this variable violate?",
+         answer("Each variable in a tidy data set has been transformed to be interpretable."),
+         answer("Numeric values in tidy data can not represent categories."),
+         answer("Tidy data has no missing values."),
+         answer("Tidy data has one variable per column.",correct = TRUE))
+```
+
+## Question 3
+
+```{r q3}
+question("Download the Excel spreadsheet on Natural Gas Aquisition Program here: </br>
+         https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx </br>
+         Read rows 18-23 and columns 7-15 into R and assign the result to a variable called 'dat', 
+         what is the result of the expression 'sum(dat$Zip*dat$Ext,na.rm=T)'?</br></br>
+         (original data source: http://catalog.data.gov/dataset/natural-gas-acquisition-program)",
+         answer("184585"),answer("338924"),answser("36534720",correct = TRUE),answer("0"))
+```
+
+```{r ans3,exercise = TRUE}
+
+
+```
+
+```{r ans3-solution}
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx","datagov.xlsx",mode = "wb")
+data <- readxl::read_xlsx("datagov.xlsx")
+dat  <- data[18:23,7:15]
+names(dat) <- data[17,7:15]
+dat$Zip <- as.numeric(dat$Zip)
+dat$Ext <- as.numeric(dat$Ext)
+sum(dat$Zip * dat$Ext,na.rm = TRUE)
+```
+
+## Question 4
+
+```{r q4}
+question("Read the XML data on Baltimore restaurants from here:</br>
+         https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml </br>
+         How many restaurants have zipcode 21231?",
+         answer("100"),answer("127",correct = TRUE),answer("130"),answer("28"))
+```
+
+```{r ans4,exercise = TRUE}
+
+```
+
+```{r ans4-solution}
+library(xml2)
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml","restaurants.xml")
+data <- read_xml("restaurants.xml")
+length(grep("21231",xml_find_all(data,"//zipcode")))
+```
+
+## Question 5
+
+```{r q5}
+question("The American Community Survey distributes downloadable data about United States communities.
+         Download the 2006 microdata survey about housing for the state of Idaho using download.file() from here:</br>
+         https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv</br>
+         using the fread() command load the data into an R object 'DT'. The following are ways to 
+         calculate the average value of the variable 'pwgtp15' broken down by sex.
+         Using the data.table package, which will deliver the fastest user time?",
+         answer("mean(DT$pwgtp15,by=DT$SEX)"),
+         answer("DT[,mean(pwgtp15),by=SEX]",correct = TRUE), ## data.table was written in C
+         answer("tapply(DT$pwgtp15,DT$SEX,mean)"),
+         answer("sapply(split(DT$pwgtp15,DT$SEX),mean)"),
+         answer("rowMeans(DT)[DT$SEX==1]; rowMeans(DT)[DT$SEX==2]"),
+         answer("mean(DT[DT$SEX==1,]$pwgtp15); mean(DT[DT$SEX==2,]$pwgtp15)"))
+```
