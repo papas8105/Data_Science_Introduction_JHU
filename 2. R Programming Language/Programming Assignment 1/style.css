@@ -1,0 +1,13 @@
+/* Whole document: */
+body{
+  font-family: "Ubuntu";
+  font-size: 12pt;
+  text-align: justify;
+}
+
+.center {
+  display: table;
+  margin-right: auto;
+  margin-left: auto;
+}
+

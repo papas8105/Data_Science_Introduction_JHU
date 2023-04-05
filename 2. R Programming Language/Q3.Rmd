@@ -6,7 +6,8 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE,comment = "")
+library(gradethis)
+knitr::opts_chunk$set(comment = "",echo = FALSE)
 ```
 <style>
   body {
@@ -30,14 +31,20 @@ answer to the nearest whole number.
 
 (Only enter the numeric result and nothing else.)</b>
 
-```{r q1,echo = TRUE}
+```{r q1a,exercise = TRUE}
+
+```
+
+```{r q1a-solution}
 round(mean(iris$Sepal.Length[iris$Species == 'virginica'],na.rm = TRUE))
 ```
 
-<b>Alternative solution.</b>
-
-```{r q1a,echo = TRUE}
-with(iris,tapply(Sepal.Length,Species,mean,na.rm = TRUE))
+```{r q1a-check}
+grade_this(if(identical(.result,7)) {
+  pass("Great job!")
+} else {
+  fail("Start over again!")
+})
 ```
 
 ### 2.
@@ -87,10 +94,20 @@ average horsepower of 8-cylinder cars?
 (Please round your final answer to the nearest whole number. Only enter the
 numeric result and nothing else.)</b>
 
-```{r q4,echo = TRUE}
-library(dplyr,warn.conflicts = FALSE)
-mtcars %>% group_by(cyl) %>% summarise(m = mean(hp)) -> d
-round(d$m[3] - d$m[1])
+```{r q4,exercise = TRUE}
+
+```
+
+```{r q4-solution}
+round(abs(mean(mtcars$hp[mtcars$cyl == 4]) - mean(mtcars$hp[mtcars$cyl == 8])))
+```
+
+```{r q4-check}
+grade_this(if(identical(.result,127)) {
+  pass("Great job!")
+} else {
+  fail("Start over again!")
+})
 ```
 
 ### 5.

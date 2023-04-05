@@ -29,16 +29,18 @@ more information we can use the help function in R.
 help("ToothGrowth")
 ```
 
-The dataset has three columns, the first column is the "len" continuous parameter that records the tooth length in millimeters, the second is
-the "supp" parameter that records a two level categorical variable with labels VC or OJ which are the types of supplements
-and finally the "dose" column which is a continuous parameter that records the doses in mg/day which are 0.5, 1 and 2 mg/day. 
+The dataset has three columns, the first column is the "len" continuous parameter that records
+the tooth length in millimeters, the second is the "supp" parameter that records a two level categorical variable 
+with labels VC or OJ which are the types of supplements and finally the "dose" column which is a continuous
+parameter that records the doses in mg/day which are 0.5, 1 and 2 mg/day. 
 
 ```{r structure,comment = ""}
 str(ToothGrowth)
 ```
 
-The dataset has no missing values, its first thirty entries are the observations recorded for the VC delivery method and the other thirty 
-entries the respective observations for the OJ delivery method. In order to take a glimpse of how the data rows are recorded, 
+The dataset has no missing values, its first thirty entries are the observations recorded 
+for the VC delivery method and the other thirty entries the respective observations for the OJ
+delivery method. In order to take a glimpse of how the data rows are recorded, 
 the first six entries are 
 
 ```{r head ,comment = ""}
@@ -61,10 +63,9 @@ from which we deduce that all our subjects in the sample developed a tooth regar
 
 ## Exploratory Analysis
 
-We will load the "ggplot2" package and create a boxplot to visualize  
-the medians, outliers and critical quantiles. In the next plot the x axis represents
-the doses in mg/day, the y axis the tooth length and the two boxes respectively  correspond
-to the type of supplement.
+We will load the "ggplot2" package and create a boxplot to visualize the medians, 
+outliers and critical quantiles. In the next plot the x axis represents the doses in mg/day, 
+the y axis the tooth length and the two boxes respectively  correspond to the type of supplement.
 
 ```{r exp11,fig.align = "center",fig.cap = "Tooth Length By Supplement Group"}
 library(ggplot2)
@@ -80,10 +81,14 @@ g <- g + geom_point(x = 2,y = mean(ToothGrowth$len[ToothGrowth$supp == "VC"]),ce
 g
 ```
 
-The median of the tooth length of the subjects provided with orange juice is significantly bigger than the tooth growth length 
-of the ascorbic acid delivery method and the interquantile 75% range of the OJ supplement type seems to be a little bit 
-narrower that the VC supplement's box implying same variability between the two groups. The two green points inside the boxes 
-show the means of the two groups and it is obvious that the distance between the mean and median in group OJ implies skewness, something which 
+The median of the tooth length of the subjects provided with orange juice is
+significantly bigger than the tooth growth length 
+of the ascorbic acid delivery method and the interquantile 75% range of the OJ
+supplement type seems to be a little bit 
+narrower that the VC supplement's box implying same variability between the two groups.
+The two green points inside the boxes 
+show the means of the two groups and it is obvious that the distance between the mean and median in group OJ
+implies skewness, something which 
 isn't visible in the "VC" group since the mean and the median fall close.
 
 In the next figure we break down the responce in tooth length by dose in each group separately.
@@ -97,12 +102,18 @@ g <- g + xlab("dose") + ylab("tooth length") + labs(fill = "supplement")
 g
 ```
 
-From a quick view it seems that the subjects provided with the supplement of orange juice respond with better results in
-tooth growth with doses 0.5 and 1 mg/day as it can be seen from the medians (black horizontal lines inside the boxes) and the 
-placement of the boxes which is also higher than the group provided with the ascorbic acid supplement with the same doses respectively,
-but both methods perform almost well for a dose of 2 mg/day although the VC group's lengths seem more spread for that dose.
-We also observe outliers for a dose of 2 mg/day and 1 mg/day for OJ and VC groups respectively, which might explain the cause of skewness 
-as noted previously and it is obvious that the general trend is that the higher the dose per day the better the response in tooth
+From a quick view it seems that the subjects provided with the supplement of orange 
+juice respond with better results in
+tooth growth with doses 0.5 and 1 mg/day as it can be seen from the medians 
+(black horizontal lines inside the boxes) and the 
+placement of the boxes which is also higher than the group provided with the 
+ascorbic acid supplement with the same doses respectively,
+but both methods perform almost well for a dose of 2 mg/day although the VC group's 
+lengths seem more spread for that dose.
+We also observe outliers for a dose of 2 mg/day and 1 mg/day for OJ and VC groups respectively,
+which might explain the cause of skewness 
+as noted previously and it is obvious that the general trend is that the higher
+the dose per day the better the response in tooth
 length growth for both groups.
 
 In the next figure we plot the density of the tooth lengths for the whole sample to examine if the lengths of the 
@@ -117,9 +128,11 @@ g <- g + geom_vline(xintercept = mean(ToothGrowth$len),colour = "red") +
 g
 ```
 
-As expected the tooth lengths come from a normal distribution and the fact that we don't see a perfect Gaussian distribution support with 
-all the lengths over zero as seen from the small tail to the left of the orange vertical line might be attributed to the way that the 
-program computes the density kernel which will not concern us but also to the small sample of sixty observations. So we accept as a fact
+As expected the tooth lengths come from a normal distribution and the fact that we
+don't see a perfect Gaussian distribution support with all the lengths over zero as
+seen from the small tail to the left of the orange vertical line might be attributed to the way that the 
+program computes the density kernel which will not concern us but
+also to the small sample of sixty observations. So we accept as a fact
 that the dataset follows the normal distribution and that the whole distribution lies strictly over zero.
 Another observation is that the mean and the median, "red" and "black" vertical lines respectively are 
 close implying that the skewness is almost zero, so with more observations and better experimental design 
@@ -139,9 +152,10 @@ g <- g + facet_grid(. ~ supp) + xlim(-20,45) + geom_vline(xintercept = 0) + geom
 g
 ```
 
-In the next figure we visualize the density of the tooth length per supplement divided in cells for each dose in mg/day in order 
-to check deeper the reason behind the skewness in our data and the negative length values in the density plot 
-of the VC treatment group.
+In the next figure we visualize the density of the tooth length per supplement
+divided in cells for each dose in mg/day in order 
+to check deeper the reason behind the skewness in our data and the negative length values
+in the density plot of the VC treatment group.
 
 ```{r exp5,fig.align = "center",fig.cap = "Density Of Tooth Length Per Supplement",fig.asp=.35,fig.pos="htb"}
 g <- ggplot(data = ToothGrowth,aes(len,fill = supp,alpha = .25))
@@ -152,29 +166,36 @@ g <- g + scale_fill_discrete(name = "supplement") + geom_vline(xintercept = 0) +
 g
 ```
 
-The OJ group tooth length distribution by dose seems normal regarding the fact that we only 10 have observations per dose in every cell. The 
+The OJ group tooth length distribution by dose seems normal regarding the fact 
+that we only 10 have observations per dose in every cell. The 
 length is strictly over zero in all cells, the 2 mg/day dose though presents an anomaly to the right of 
-the peak of its density, which is explained by the outlier in the boxplot in figure 2 and we observe right and left skewness for 0.5 and 
-1.0 mg/day doses respectively.
+the peak of its density, which is explained by the outlier in the boxplot in figure 2 and we observe right and 
+left skewness for 0.5 and 1.0 mg/day doses respectively.
 
-The VC tooth length distribution for 0.5 mg/day dose seems to fall over lengths less than zero in the x axis and it is the only 
+The VC tooth length distribution for 0.5 mg/day dose seems to fall over lengths
+less than zero in the x axis and it is the only 
 one in the group that does so, it is also slightly bimodal which explain why the sample's tooth length
 distribution for VC treatment in figure 4 has a tail that falls over the
-negative tooth lengths, the middle cell VC for 1.0 mg/day has a small peak to the right of the center of the distribution, 
-which is explained by the outlier in figure 2 and the last cell VC 2.0 mg/day seems normal with a large variance around the mean. We will consider 
+negative tooth lengths, the middle cell VC for 1.0 mg/day has a small peak 
+to the right of the center of the distribution, 
+which is explained by the outlier in figure 2 and the last cell VC 2.0 mg/day
+seems normal with a large variance around the mean. We will consider 
 that the assumption of normality is held for all cells generally and will overcome the fact that one 
 distribution falls under the zero tooth length threshold.
 
 ## Statistical Inference
 
-We are going to conduct two t statistical significance tests, the normality of the data which is a necessary condition for the t-test was discussed
-in the previous section and the skewness we observed in some distributions is overcome by the robustness of the t-test to skewed data if it isn't 
+We are going to conduct two t statistical significance tests, the normality of the data
+which is a necessary condition for the t-test was discussed
+in the previous section and the skewness we observed in some distributions is overcome 
+by the robustness of the t-test to skewed data if it isn't 
 extreme. The two one sided t-tests for a 5% significance level are:
 
   * test 1: test if the mean tooth lengths for the whole data set is greater than zero.
   
-  * test 2: test if the difference of the means of the tooth lengths by supplement intake is significantly greater than zero, treating each group 
-  independently and assuming an equal variance across the two groups.
+  * test 2: test if the difference of the means of the tooth lengths by supplement intake 
+  is significantly greater than zero, treating each group independently and assuming an equal
+  variance across the two groups.
   
 ### Test 1
 
@@ -188,16 +209,19 @@ $\mathfrak{H}_{a}$: True mean of tooth growth lengths is greater than zero.
 t.test(ToothGrowth$len,alternative = "greater")
 ```
 
-The p-value of the test is significantly less than the 0.05 significance level, so we reject the null hypothesis and we accept the alternative 
+The p-value of the test is significantly less than the 0.05 significance level, 
+so we reject the null hypothesis and we accept the alternative 
 which states that the true mean of the lengths regardless of the treatment is significantly greater than zero.
 
 ### Test 2
 
 <u>Hypotheses Statements</u>
 
-$\mathfrak{H}_{0}$: Tooth growth of treatment group OJ is less than or equal to the tooth growth response of the treatment group VC.
+$\mathfrak{H}_{0}$: Tooth growth of treatment group OJ is less than or equal to the
+tooth growth response of the treatment group VC.
 
-$\mathfrak{H}_{a}$: Tooth growth of treatment group OJ is greater than the tooth growth response of the treatment group VC.
+$\mathfrak{H}_{a}$: Tooth growth of treatment group OJ is greater than the tooth growth 
+response of the treatment group VC.
 
 
 ```{r test 2,comment = ""}
@@ -205,14 +229,16 @@ t.test(ToothGrowth$len[ToothGrowth$supp == "OJ"],ToothGrowth$len[ToothGrowth$sup
        var.equal = TRUE,alternative = "greater",type = "two.sample",alpha = 0.05)
 ```
 
-The p-value of the test is less that than the 0.05 significance level, so we reject the null hypothesis and accept the alternative hypothesis 
+The p-value of the test is less that than the 0.05 significance level, 
+so we reject the null hypothesis and accept the alternative hypothesis 
 that the orange juice intake performs better.
 
 ## Non Parametric Techniques
 
 ### Bootstrap
 
-Since we raised some concerns regarding the statistical power of the experimental design and about the normality of the data in 
+Since we raised some concerns regarding the statistical power of the experimental
+design and about the normality of the data in 
 our tests with the skewed figures in the first section, we will introduce in our report a non 
 parametric technique named "bootstrap" which was developed by 
 Stanford statistician Bradley Efron. We will create two samples of 30 observations taken from  the 
@@ -220,9 +246,12 @@ original groups OJ and VC separately __with replacement__ and then compare the m
 we will repeat the process many times and after the end we will compute a p-value 
 for the test by taking the mean of the instances in which the mean of bootstrapped VC sample was
 found greater than the mean of the  OJ bootstrapped samples. The 
-hypotheses in this setting are the same as in test 2 of the previous section. We could have used the "median" as a metric, but in 
-bootstrap processes this metric is very sensitive to bias created by outliers and skewness, there are R packages that correct the bias but 
-since we want a neat and simple code and not a package written by fellow data scientists the mean metric serves the purpose perfectly, since it 
+hypotheses in this setting are the same as in test 2 of the previous section. 
+We could have used the "median" as a metric, but in 
+bootstrap processes this metric is very sensitive to bias created by outliers and skewness, 
+there are R packages that correct the bias but 
+since we want a neat and simple code and not a package written by fellow data scientists 
+the mean metric serves the purpose perfectly, since it 
 is unbiased! The following simple code performs the bootstrap process within a few lines.
 
 ```{r test 3,comment = ""}
@@ -237,24 +266,30 @@ for (ii in 1:1e4) {
 mean(boot_vec)
 ```
 
-For ten thousand iterations the p-value we get is less than the significance level 0.05 so we reject the null hypothesis that the mean of the VC 
-treatment groups is  greater than the mean of the OJ group and accept that the OJ treatment performs better in tooth length growth response than 
+For ten thousand iterations the p-value we get is less than the significance
+level 0.05 so we reject the null hypothesis that the mean of the VC 
+treatment groups is  greater than the mean of the OJ group and accept that
+the OJ treatment performs better in tooth length growth response than 
 the VC treatment group.
 
 ### Label Permutation Test
 
-In this non parametric test we will examine if the labels of the treatment groups play a significant role in our tests. 
-We will compute firstly the difference in means of the tooth lengths of the two treatment groups which will call the 
+In this non parametric test we will examine if the labels of the treatment
+groups play a significant role in our tests. 
+We will compute firstly the difference in means of the tooth lengths of the 
+two treatment groups which will call the 
 _original_ difference in means and then for many repetitions of shuffling the supp labels and keeping all records 
 in the other columns the same as in the original data, we will compute the difference in means 
 permutation we will compare it to the _original_ difference.
 
 <u>Hypotheses statements</u>
 
-$\mathfrak{H}_{0}$: After shuffling treatment labels many times, VC label performs better than OJ in tooth length response mean
+$\mathfrak{H}_{0}$: After shuffling treatment labels many times, VC label performs better than OJ
+in tooth length response mean
 difference, so the labels are insignificant based on the second t-test we conducted previously.
 
-$\mathfrak{H}_{0}$: The groups' labels are significant in our tests, the OJ group performs better in tooth length response.
+$\mathfrak{H}_{0}$: The groups' labels are significant in our tests, the OJ group performs
+better in tooth length response.
 
 ```{r label permutation test,comment = ""}
 me <- mean(ToothGrowth$len[ToothGrowth$supp == "OJ"] - ToothGrowth$len[ToothGrowth$supp == "VC"])
@@ -267,7 +302,8 @@ p_value <- mean(perm_vec > me)
 print(p_value)
 ```
 
-The p-value is less than the 0.05 significance level and so the labels play a significant in our tests, the following figure 
+The p-value is less than the 0.05 significance level and so the labels play a significant 
+in our tests, the following figure 
 depicts the distribution of the means computed in the previous coding chunk and the p-value.
 
 ```{r fig6,results = F, message = F,eval = FALSE}
@@ -287,8 +323,10 @@ legend("topright",legend = "p-value",pch = 19,cex = 2)
 
 ## Multiple Hypothesis Testing
 
-At this section we will create a family of tests, we will compare all doses per two in the whole data set and adjust the p-values 
-with the __bonferroni__ correction for the family wise error rate, the tests are fifteen in number and will be stored in a list.
+At this section we will create a family of tests, we will compare all doses per two 
+in the whole data set and adjust the p-values 
+with the __bonferroni__ correction for the family wise error rate, the tests are fifteen in
+number and will be stored in a list.
 
 ```{r mht,comment = ""}
 all_tests <- list(
@@ -347,13 +385,16 @@ p.adjust(all_tests,method = "bonferroni")
 
 The non significant results comply with the exploratory analysis findings that
 the higher the dose the better the results regardless of the treatment 
-OJ or VC and that for 2.0 mg/day dose the OJ and VC perform almost the same in tooth growth length. The significant results 
-on the other hand are P_.5OJ_.5VC, P_1.0OJ_.5VC, P_1.0OJ_1.0VC, p_2.0OJ_.5VC and p_2.0OJ_1.0VC from which we accept that
+OJ or VC and that for 2.0 mg/day dose the OJ and VC perform almost the same in tooth growth length.
+The significant results 
+on the other hand are P_.5OJ_.5VC, P_1.0OJ_.5VC, P_1.0OJ_1.0VC, p_2.0OJ_.5VC and p_2.0OJ_1.0VC 
+from which we accept that
 for s dose of 0.5 mg/day OJ performs better than VC, 1.0 mg/day OJ better than .5 and 1.0 mg/day VC and 2.0 mg/day
 OJ better than .5 mg/day and 1.0 mg/day VC treatment in response to tooth growth length.
 
 ## Conclusions
 
-The final conclusion is that OJ treatment group showed better results with doses of 0.5 and 1.0 mg/day and the 2.0 mg/day
+The final conclusion is that OJ treatment group showed better results with doses 
+of 0.5 and 1.0 mg/day and the 2.0 mg/day
 the same results compared to the VC treatment group doses respectively, the general trend for both groups was
 that the bigger the dose the better the response in response  to tooth growth length.

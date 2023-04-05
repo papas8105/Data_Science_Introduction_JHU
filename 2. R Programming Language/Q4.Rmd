@@ -6,7 +6,7 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE,comment = "")
+knitr::opts_chunk$set(comment = "",echo = FALSE)
 ```
 <style>
   body {
@@ -21,6 +21,9 @@ knitr::opts_chunk$set(echo = FALSE,comment = "")
 ```{r,echo = TRUE,eval = FALSE}
 set.seed(1)
 rpois(5,2)
+```
+```{r term1,exercise = TRUE}
+
 ```
 
 ```{r q1}
@@ -45,8 +48,7 @@ question("What R function can be used to generate standard Normal random
 ### 3.
 
 ```{r q3}
-question("When simulating data, why is using the set.seed() function important?
-         Select all that apply.",
+question("When simulating data, why is using the set.seed() function important? Select all that apply.",
   answer("It can be used to generate non-uniform random numbers."),
   answer("It ensures that the random numbers generated are within specified
          boundaries."),

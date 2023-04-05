@@ -6,7 +6,7 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(comment = '',echo = FALSE)
 ```
 <style>
   body {
@@ -154,6 +154,19 @@ question("Suppose I have a vector x <- c(3, 5, 1, 10, 12, 6) and I want to set a
 <b>Use the [Week 1 Quiz Data Set](https://d396qusza40orc.cloudfront.net/rprog/data/quiz1_data.zip)
 to answer questions 11-20.</b>
 
+
+```{r setupA}
+if (!file.exists("data.zip")) {
+  download.file("d396qusza40orc.cloudfront.net/rprog/data/quiz1_data.zip",
+                destfile = "data.zip")
+  zip::unzip("data.zip")
+}
+
+data <- read.csv("hw1_data.csv")
+```
+
+<b> We have loaded the data for you and stored it in a variable we named "data".</b>
+
 ### 11.
 
 ```{r 11}
@@ -165,13 +178,11 @@ question("In the dataset provided for this Quiz, what are the column names of th
 )
 ```
 
-<u>answer</u>
+```{r 11a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer11,eval = FALSE,echo = TRUE}
-library(readr)
-download.file("https://d396qusza40orc.cloudfront.net/rprog/data/quiz1_data.zip","data.zip")
-unzip("data.zip")
-data <- read_csv('hw1_data.csv')
+``` 
+
+```{r 11a-solution}
 names(data)
 ```
 
@@ -202,9 +213,11 @@ question("Extract the first 2 rows of the data frame and print them to the conso
 </pre>"))
 ```
 
-<u>answer</u>
+```{r 12a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer12,echo = TRUE,eval = FALSE}
+``` 
+
+```{r 12a-solution}
 head(data,2)
 ```
 
@@ -218,9 +231,11 @@ question("How many observations (i.e. rows) are in this data frame?",
   answer("160"))
 ```
 
-<u>answer</u>
+```{r 13a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer,echo = TRUE,eval = FALSE}
+```
+
+```{r 13a-solution}
 nrow(data)
 ```
 
@@ -251,9 +266,11 @@ answer("<pre>
 </pre>",correct = TRUE))
 ```
 
-<u>answer</u>
+```{r 14a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer14,echo = TRUE,eval = FALSE}
+```
+
+```{r 14a-solution}
 tail(data,2)
 ```
 
@@ -267,9 +284,11 @@ question("What is the value of Ozone in the 47th row?",
   answer("34"))
 ```
 
-<u>answer</u>
+```{r 15a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer15,echo = TRUE,eval = FALSE}
+```
+
+```{r 15a-solution}
 data$Ozone[47]
 ```
 
@@ -283,9 +302,11 @@ question("How many missing values are in the Ozone column of this data frame?",
   answer("78"))
 ```
 
-<u>answer</u>
+```{r 16a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer16,echo = TRUE,eval = FALSE}
+```
+
+```{r 16a-solution}
 sum(is.na(data$Ozone))
 ```
 
@@ -300,9 +321,11 @@ question("What is the mean of the Ozone column in this dataset? Exclude missing 
   answer("53.2"))
 ```
 
-<u>answer</u>
+```{r 17a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer17,echo = TRUE,eval = FALSE}
+```
+
+```{r 17a-solution}
 mean(data$Ozone,na.rm = TRUE)
 ```
 
@@ -317,11 +340,12 @@ question("Extract the subset of rows of the data frame where Ozone values are ab
   answer("212.8",correct = TRUE))
 ```
 
-<u>answer</u>
+```{r 18a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer18,echo = TRUE,eval = FALSE}
-library(dplyr,quietly = TRUE,warn.conflicts = FALSE)
-data %>% filter(Ozone > 31 & Temp > 90) %>% summarize(mean(Solar.R))
+```
+
+```{r 18a-solution}
+mean(data$Solar.R[data$Ozone > 31 & data$Temp > 90],na.rm = TRUE)
 ```
 
 
@@ -335,10 +359,12 @@ question("What is the mean of 'Temp' when 'Month' is equal to 6?",
   answer("90.2"))
 ```
 
-<u>answer</u>
+```{r 19a,exercise = TRUE,exercise.setup = "setupA"}
 
-```{r answer19,echo = TRUE,eval = FALSE}
-data %>% filter(Month == 6) %>% summarize(mean(Temp))
+```
+
+```{r 19a-solution}
+mean(data$Temp[data$Month == 6],na.rm = TRUE)
 ```
 
 ### 20.
@@ -350,11 +376,10 @@ question("What was the maximum ozone value in the month of May (i.e. Month is eq
   answer("18"),
   answer("97"))
 ```
+```{r 20a,exercise = TRUE,exercise.setup = "setupA"}
 
-<u>answer</u>
-
-```{r answer20,echo = TRUE,eval = FALSE}
-data %>% filter(Month == 5) %>% summarize(max(Ozone,na.rm = TRUE))
 ```
 
----
+```{r 20a-solution}
+max(data$Ozone[data$Month == 5],na.rm = TRUE)
+```

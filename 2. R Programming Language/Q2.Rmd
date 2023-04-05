@@ -6,7 +6,7 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE,comment = '')
+knitr::opts_chunk$set(comment = '',echo = FALSE)
 ```
 <style>
   body {
@@ -171,7 +171,8 @@ question('The R language uses what type of scoping rule for resolving free varia
 ```{r q8}
 question('How are free variables in R functions resolved?',
   answer('The values of free variables are searched for in the environment in which the function was called'),
-  answer('The values of free variables are searched for in the environment in which the function was defined',correct = TRUE),
+  answer('The values of free variables are searched for in the environment in which the function was
+         defined',correct = TRUE),
   answer('The values of free variables are searched for in the global environment'),
   answer('The values of free variables are searched for in the working directory'))
 ```
