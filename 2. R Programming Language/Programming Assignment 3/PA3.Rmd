@@ -10,7 +10,9 @@ output:
     theme: united
     toc: yes
 ---
-
+```{r options,echo = FALSE}
+knitr::opts_chunk$set(comment = "")
+```
 ## Introduction
 
 The  Hospital  Compare  web  site  contains  a  lot  of  data  and  we  will  only  look  at  a  small  subset
@@ -21,7 +23,7 @@ attacks, heart failure, and pneumonia for over 4,000 hospitals.
 
 * hospital-data.csv:  Contains information about each hospital.
 
-* Hospital_Revised_Flatfiles.pdf:  Descriptions of the variables in each file (i.e the code book). A 
+* Hospital_Revised_Flatfiles.pdf:  Descriptions of the variables in each file. A 
 description of the variables in each of the files is in the included PDF file named 
 Hospital_Revised_Flatfiles.pdf. This document contains information about many other files that are not included 
 with this programming assignment.
@@ -38,15 +40,15 @@ Read the outcome data into data into R via the read.csv function and look at the
 
 ```{r head}
 data <- read.csv("outcome-of-care-measures.csv",colClasses = "character")
-#head(outcome)
+##head(data)
 ```
 
 There are many columns in this dataset.  You can see how many by typing ncol(outcome) (you can see the number of
 rows with the __nrow__ function).  In addition, you can see the names of each column
-by typing names(outcome) (the names are also in the PDF document.To make a simple histogram of the 30-day death 
+by typing names(outcome) (the names are also in the PDF document).To make a simple histogram of the 30-day death 
 rates from heart attack (column 11 in the outcome dataset).
 
-```{r histogram}
+```{r histogram,fig.align = "center"}
 data[,11] <- as.numeric(data[,11])
 ## you may get a warning about NAs being introduced; that is okay
 hist(data[,11],xlab = "30 days mortality rates from heart attack",main = "",col = 'red')
