@@ -23,11 +23,12 @@ $\bullet$ $U$ is and $m\times n$ __column orthogonal__ matrix and its vectors ar
 $\bullet$ $V$ is $n\times n$ and __column orthogonal__ matrix and its vectors are _eigenvectors_ of $A^{T}A$
 \[A^{T}A = VDU^{T}UDV^{T}=VD^{2}V^{T}\]
 
-$\bullet$ $D$ is $n\times n$ diagonal non-negative real vualues called _singular_ values, 
+$\bullet$ $D$ is $n\times n$ diagonal non-negative real values called _singular_ values, 
 $D=\text{diag}\left(\sigma_1,\sigma_2,\ldots,\sigma_n\right)$ ordered in __descending__ order.
 
-If $U = (u_1\;u_2\;u_3\;...\;u_n)$ and $V = (v_1\;v_2\;v_3\;...\;v_n)$ then $A = \sum\limits_{i=1}^{n}\sigma_{i}u_{i}v_{i}^{T}$, 
-note also that the sum goes from 1 to r where r is the $\text{rank}(A)$.
+If $U = (u_1\;u_2\;u_3\;...\;u_n)$ and $V = (v_1\;v_2\;v_3\;...\;v_n)$ then
+$A = \sum\limits_{i=1}^{n}\sigma_{i}u_{i}v_{i}^{T}$, 
+note also that the sum is equal to the sum with indexes from 1 to r where r is the $\text{rank}(A) \leq n$.
 
 _Example 1_
 

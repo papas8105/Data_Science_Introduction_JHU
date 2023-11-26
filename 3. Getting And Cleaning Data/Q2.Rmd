@@ -1,0 +1,46 @@
+---
+title: "Quiz 2"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+<style>body{text-align: justify}</style>
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE,comment = "")
+```
+
+### Question 1
+
+```{r q1}
+question("Register an application with the Github API [here](https://github.com/settings/developers). 
+          Access the API to get information on your instructors repositories (hint: this is the url want 
+          'https://api.github.com/users/jtleek/repos'). Use 
+         this data to find the time that the datasharing repo was created. What time was it created?",
+         answer("2014-02-06T16:13:11Z"),
+         answer("2012-06-20T18:39:06Z"),
+         answer("2014-03-05T16:11:46Z"),
+         answer("2013-11-07T13:25:07Z",correct = TRUE))
+```
+
+```{r ans1,exercise = TRUE}
+
+```
+
+```{r ans1-solutio}
+
+```
+
+### Question 2
+
+```{r q2}
+question("The sqldf package allows for execution of SQL commands on R data frames. We will use the sqldf package to practice
+          the queries we might send with the dbSendQuery command in RMySQL. Download the American Community Survey 
+          data [here](https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv) and load it 
+          into an R object called <cite>acs</cite>. Which of the following commands will select only the data for the probability
+          weights pwgtp1 with ages less than 50?",
+         answer("sqldf('select pwgtp1 from acs where AGEP < 50)'",correct = TRUE),
+         answer("sqldf('select  pwgtp1 from acs')"),
+         answer("sqldf('select * from acs')"),
+         answer("sqldf('select * from acs where AGEP < 50')"))
+```
